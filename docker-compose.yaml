@@ -1,0 +1,39 @@
+version: "3.4"
+services:
+ server:
+   image: node:alpine
+   container_name: server_dev_container
+   entrypoint: /bin/sh
+   ports:
+     - 7000:7000
+   working_dir: /srv/app
+   environment:
+      NODE_ENV: development
+   volumes:
+     - type: bind
+       source: ./
+       target: /srv/app
+     - node_modules:/app/node_modules
+   tty: true
+   command: entrypoint.sh
+
+ db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+    volumes:
+      - type: bind
+        source : ./db/dbScripts/
+        target: /docker-entrypoint-initdb.d/
+
+ adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  node_modules:
