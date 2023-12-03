@@ -1,9 +1,10 @@
 import {RequestHandler} from "express"
-import { cognitoPoolData, db } from "../main";
+import { cognitoPoolData, db, verifier} from "../main";
 import { Team, User, Driver, League } from "../model/dbTypes";
-import { newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest } from "../model/HTTPtypes";
+import { newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest } from "../model/HTTPtypes";
 import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { cogAuthPassword, cogConfirmUser, cogDelUser, cogSignup } from "./aws-sdk/cognito";
+import { cogAuthPassword, cogAuthToken, cogConfirmUser, cogDelUser, cogGetUser, cogResendConfirmationCode, cogSignup } from "./aws-sdk/cognito";
+import { Knex } from "knex";
 
 
 export const ping : RequestHandler = async  (req, res, next) => {
@@ -43,9 +44,9 @@ export const newUser : RequestHandler = async (req, res, next) => {
             }else{
                 const cogDelRes = await cogDelUser(userEmail,cognitoPoolData.UserPoolId)
             }
-        }
+        } 
 
-    } catch (err:unknown) {
+    } catch (err:unknown) { 
         if(err instanceof Error){
 
             console.log(err.message)
@@ -53,6 +54,21 @@ export const newUser : RequestHandler = async (req, res, next) => {
         }
     }
     next(); 
+}
+
+export const resendConfirmationCode : RequestHandler = async(req, res, next) => { 
+    try {
+        const resendReq:resendConfirmationCodeRequest = req.body
+        const cogres = await cogResendConfirmationCode(resendReq.email,cognitoPoolData.ClientId)
+        res.send(cogres).status(200)  
+    
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }    
+    }
+    next();
 }
 
 export const confirmUser : RequestHandler = async (req, res, next) => {
@@ -72,12 +88,14 @@ export const authenticateUser : RequestHandler = async (req, res,next) => {
     try {
         const authDetails:authenticationRequest = req.body
         if(cognitoPoolData.ClientId && cognitoPoolData.UserPoolId){
-            const cogRes = await cogAuthPassword(authDetails.username, authDetails.username,cognitoPoolData.ClientId, cognitoPoolData.UserPoolId)
+            const cogRes = await cogAuthPassword(authDetails.email, authDetails.password,cognitoPoolData.ClientId, cognitoPoolData.UserPoolId)
+            res.send(cogRes)
         }
 
-    } catch (err:unknown) {
+ 
+    } catch (err:unknown) { 
         if(err instanceof Error){
-            console.log(err.message)
+            console.log(err)
             res.send(err.message).status(400)
         }
     }
@@ -87,10 +105,12 @@ export const authenticateUser : RequestHandler = async (req, res,next) => {
 export const newTeam : RequestHandler = async (req, res, next) => {
     try {
         const teamRequest:newTeamRequest = req.body
-        //test webtoken here infor now ill just make up a userid
+        const payload = await cogGetUser(teamRequest.token)
+        const cogEamil = payload.UserAttributes![2].Value
+        const user = await db<User>('users').where('email',cogEamil)
         const dbres = await db<Team>('teams').insert({
             team_name:teamRequest.team_name,
-            user_id:1,
+            user_id:user[0].id,
             tier1_driver_id:teamRequest.tier1_driver_id,
             tier2_driver_id:teamRequest.tier2_driver_id,
             tier3_driver_id:teamRequest.tier3_driver_id,
@@ -141,3 +161,17 @@ export const newLeague : RequestHandler = async (req,res,next) => {
     }
 }
 
+export const refreshToken : RequestHandler = async (req,res,next) => {
+    try {
+        const token:tokenAuthRequest = req.body
+            if(cognitoPoolData.ClientId && cognitoPoolData.UserPoolId){
+                const result = await cogAuthToken(token.token,cognitoPoolData.ClientId,cognitoPoolData.UserPoolId)
+                res.send(result).status(200)
+            }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}

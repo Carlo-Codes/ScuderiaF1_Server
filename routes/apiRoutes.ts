@@ -8,14 +8,16 @@ let router = express.Router()
 //router.use(AuthController.verifyAccessToken)//for authing
 
 //Endpoints//
-router.get("/ping", Controller.ping)
+router.get("/ping", Controller.ping) 
 
 router.post("/newUser", Controller.newUser)
 router.post("/confirmUser", Controller.confirmUser)
-router.post("/newTeam", Controller.newTeam)
+router.post("/resendCode",Controller.resendConfirmationCode)
+router.post("/newTeam", Controller.newTeam) 
 router.post("/newLeague", Controller.newLeague)
 
 router.get("/authPassword", Controller.authenticateUser)
+router.get("/refreshToken", Controller.refreshToken)
 
 
-export default router 
+export default router  

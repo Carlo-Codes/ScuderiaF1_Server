@@ -12,18 +12,30 @@ export interface DBResponse{
 }
 
 export interface newTeamRequest extends Omit <Team,'id'| 'user_id'>{
-    webToken:string
+    token:string
 }
 
 export interface newLeagueRequest extends Omit <League,'id'|'user_id'>{
-    webToken:string
+    token:string
 }
 
 export interface authenticationRequest {
-    username:string,
+    email:string,
     password:string
+}
+
+export interface tokenAuthRequest{
+    token:string
 }
 
 export interface confirmUserRequest extends Omit<User, 'id'|'cogSub'> {
     code:string
+}
+
+export interface confirmUserRequest extends Omit<User, 'id'|'cogSub'> {
+    code:string
+}
+
+export interface resendConfirmationCodeRequest extends Omit<User, 'id'|'cogSub'> {
+    
 }

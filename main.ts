@@ -5,14 +5,10 @@ import { createUserTable, createTeamsTable, createDriverTable, createLeagesTable
 import knex, { Knex } from 'knex';
 
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-
+import {CognitoJwtVerifier} from "aws-jwt-verify"
 
 let config = require('./db/knexfile')
 
-
-/* AWS.config.update({
-    region: env.REGION
-}) */
 
 export const cognitoClient = new CognitoIdentityProviderClient({region:env.REGION})
 
@@ -21,14 +17,16 @@ export const cognitoPoolData = {
     ClientId: env.CLIENT_ID,
  }
 
+export const verifier = CognitoJwtVerifier.create({
+    userPoolId:env.POOL_ID!,
+    clientId:env.CLIENT_ID!,
+    tokenUse:"access"
+})
+
 const port = env.PORT
 export const db = knex(config.development)
 
-
-
-
 console.log("hello from the server")
-
 
 app.listen(port,()=>{
     console.log("server running on port :")
@@ -38,5 +36,4 @@ app.listen(port,()=>{
 /* createUserTable();
 createDriverTable();
 createLeagesTable();
-createTeamsTable();
- */
+createTeamsTable(); */
