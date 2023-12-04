@@ -1,7 +1,7 @@
 import {RequestHandler} from "express"
 import { cognitoPoolData, db, verifier} from "../main";
 import { Team, User, Driver, League } from "../model/dbTypes";
-import { newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest } from "../model/HTTPtypes";
+import { editTeamRequest, newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest } from "../model/HTTPtypes";
 import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { cogAuthPassword, cogAuthToken, cogConfirmUser, cogDelUser, cogGetUser, cogResendConfirmationCode, cogSignup } from "./aws-sdk/cognito";
 import { Knex } from "knex";
@@ -139,9 +139,11 @@ export const newTeam : RequestHandler = async (req, res, next) => {
 export const newLeague : RequestHandler = async (req,res,next) => {
     try {
         const leagueRequest : newLeagueRequest = req.body
-        //test webtoken here infor now ill just make up a userid
+        const payload = await cogGetUser(leagueRequest.token)
+        const cogEamil = payload.UserAttributes![2].Value
+        const user = await db<User>('users').where('email',cogEamil)
         const dbres = await db<League>('leagues').insert({
-            user_id:1,
+            user_id:user[0].id,
             league_name:leagueRequest.league_name
         }).returning('*')
 
@@ -168,6 +170,30 @@ export const refreshToken : RequestHandler = async (req,res,next) => {
                 const result = await cogAuthToken(token.token,cognitoPoolData.ClientId,cognitoPoolData.UserPoolId)
                 res.send(result).status(200)
             }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+
+export const updateTeam: RequestHandler = async (req,res,next) => {
+    try {
+        const editTeamReq : editTeamRequest = req.body
+        const payload = await cogGetUser(editTeamReq.token)
+        const cogEamil = payload.UserAttributes![2].Value
+        const dbres = await db<Team>('teams')
+            .where('id', '=', editTeamReq.teamId).returning('*')
+            .update({ 
+                team_name: editTeamReq.team_name,
+                tier1_driver_id:editTeamReq.tier1_driver_id,
+                tier2_driver_id:editTeamReq.tier2_driver_id,
+                tier3_driver_id:editTeamReq.tier3_driver_id,
+                dnf_driver_id:editTeamReq.dnf_driver_id, 
+                league_id:editTeamReq.league_id
+            }).returning('*')
+        res.send(`${editTeamReq.team_name} was succesfully updated`).status(200)
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
