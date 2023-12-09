@@ -1,7 +1,7 @@
 import { env } from 'process';
 import app from './server'
 import 'dotenv/config'
-import { createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore } from './db/dbSetup';
+import { createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore, createDriverApiStore } from './db/dbSetup';
 import knex, { Knex } from 'knex';
 
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
@@ -43,3 +43,4 @@ createLeagesTable();
 createTeamsTable(); 
 createRacesApiStore();
  */
+createDriverApiStore();

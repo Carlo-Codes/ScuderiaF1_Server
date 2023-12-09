@@ -57,11 +57,16 @@ async function createRacesApiStore(){
   })
 }
 
+async function createDriverApiStore(){
+  await db.schema.withSchema('public').createTable('DriverApiStore', function (table: Knex.CreateTableBuilder){
+    table.json('response')
+  })
+}
 
 
 
  
-  export{createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore}
+  export{createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
   
  
   

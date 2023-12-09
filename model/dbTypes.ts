@@ -38,6 +38,5 @@ export interface RacesApiStore{
 }
 
 export interface DriverApiStore{
-    id:number,
     response:object
 }

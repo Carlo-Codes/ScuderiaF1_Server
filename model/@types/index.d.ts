@@ -37,6 +37,13 @@ declare module 'knex/types/tables' {
     }
 }
 
+declare module 'knex/types/tables' {
+    interface Tables{
+        DriverApiStore:DriverApiStore;
+    }
+}
+
+
 
 
 
