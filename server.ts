@@ -22,10 +22,11 @@ app.use(function(req, res, next) {
     next();
   });
 
- app.get('/', function (req, res, next) {
+app.get('/', function (req, res, next) {
    res.sendFile(__dirname + 'index.html');
    next()
  });
+
 
 
 

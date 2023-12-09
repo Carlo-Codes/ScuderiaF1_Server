@@ -7,6 +7,8 @@ import knex, { Knex } from 'knex';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import {CognitoJwtVerifier} from "aws-jwt-verify"
 
+import {getRaces} from "./data/dataFetch"
+
 let config = require('./db/knexfile')
 
 
@@ -32,6 +34,8 @@ app.listen(port,()=>{
     console.log("server running on port :")
     console.log(port)
 })
+
+getRaces()
 
 /* createUserTable();
 createDriverTable();

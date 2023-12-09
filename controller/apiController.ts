@@ -201,3 +201,4 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
         }
     }
 }
+
