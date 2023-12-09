@@ -1,5 +1,4 @@
 import fetch from 'node-fetch'
-
 const seasonYear = 2023
 
 const apiSportsConfig = {
@@ -16,4 +15,4 @@ export async function getRaces():Promise<void>{
     console.log(data)
 }
 
-getRaces();
+
