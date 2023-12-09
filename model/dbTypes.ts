@@ -28,6 +28,16 @@ export interface Team{
 }
 export interface League{
     id:number,
-    user_id:number
-    league_name:string
+    user_id:number,
+    league_name:string,
+}
+
+export interface RacesApiStore{
+    id:number,
+    response:object
+}
+
+export interface DriverApiStore{
+    id:number,
+    response:object
 }

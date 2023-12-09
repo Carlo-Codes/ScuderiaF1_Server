@@ -1,13 +1,13 @@
 import { env } from 'process';
 import app from './server'
 import 'dotenv/config'
-import { createUserTable, createTeamsTable, createDriverTable, createLeagesTable } from './db/dbSetup';
+import { createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore } from './db/dbSetup';
 import knex, { Knex } from 'knex';
 
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import {CognitoJwtVerifier} from "aws-jwt-verify"
 
-import {getRaces} from "./data/dataFetch"
+import {updateRacesApiStore} from './data/dataPosting'
 
 let config = require('./db/knexfile')
 
@@ -35,9 +35,11 @@ app.listen(port,()=>{
     console.log(port)
 })
 
-getRaces()
-
-/* createUserTable();
+//updateRacesApiStore()
+/* 
+createUserTable();
 createDriverTable();
 createLeagesTable();
-createTeamsTable(); */
+createTeamsTable(); 
+createRacesApiStore();
+ */

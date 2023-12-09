@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-const seasonYear = 2023
+
 
 const apiSportsConfig = {
     method:'get',
@@ -9,10 +9,12 @@ const apiSportsConfig = {
     }
 }
 
-export async function getRaces():Promise<void>{
-    const response = await fetch(`https://v1.formula-1.api-sports.io/races?season=${seasonYear}`,apiSportsConfig)
+export async function getFromApiSports(url:string):Promise<object>{
+    const response = await fetch(url,apiSportsConfig)
     const data = await response.json()
-    console.log(data)
+    return data
 }
+
+
 
 

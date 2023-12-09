@@ -50,9 +50,18 @@ async function createLeagesTable(){
   })
 }
 
+async function createRacesApiStore(){
+  await db.schema.withSchema('public').createTable('RacesApiStore', function (table: Knex.CreateTableBuilder){
+    table.bigIncrements('id').primary()
+    table.json('response')
+  })
+}
+
+
+
 
  
-  export{createUserTable, createDriverTable, createTeamsTable, createLeagesTable}
+  export{createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore}
   
  
   
