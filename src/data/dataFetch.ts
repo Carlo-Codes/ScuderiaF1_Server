@@ -1,5 +1,6 @@
+import { fstat } from 'fs';
 import fetch from 'node-fetch'
-
+import * as fs from 'node:fs';
 
 const apiSportsConfig = {
     method:'get',
@@ -15,6 +16,16 @@ export async function getFromApiSports(url:string):Promise<object>{
     return data
 }
 
+
+export async function downloadAsset(url:string, filename:string){
+    const asset = await fetch(url)
+    const data = await asset.json()
+    fs.writeFile(filename,Buffer.from(data,'utf-8'),'binary',(err:unknown) => {
+        if(err){
+            console.log(err)
+        }
+    })
+}
 
 
 
