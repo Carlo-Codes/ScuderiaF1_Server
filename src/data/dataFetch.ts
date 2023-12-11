@@ -1,6 +1,6 @@
 import { fstat } from 'fs';
 import fetch from 'node-fetch'
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
 
 const apiSportsConfig = {
     method:'get',
@@ -18,14 +18,15 @@ export async function getFromApiSports(url:string):Promise<object>{
 
 
 export async function downloadAsset(url:string, filename:string){
-    const asset = await fetch(url)
-    const data = await asset.json()
-    fs.writeFile(filename,Buffer.from(data,'utf-8'),'binary',(err:unknown) => {
-        if(err){
-            console.log(err)
-        }
-    })
+    try {
+        const asset = await fetch(url)
+        const data = await asset.buffer()
+        await fs.writeFile(filename,data)
+        console.log('image saved')
+    } catch (err:unknown) {
+        console.log(err)
+    }
 }
-
+ 
 
 

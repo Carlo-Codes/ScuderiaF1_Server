@@ -43,3 +43,8 @@ export interface resendConfirmationCodeRequest extends Omit<User, 'id'|'cogSub'>
 export interface editTeamRequest extends newTeamRequest {
     teamId:string
 }
+
+
+
+
+

@@ -8,15 +8,11 @@
             "port": 9229,
             "address": "127.0.0.1",
             "restart": true,
-            "sourceMaps": true,
             "smartStep": true,
             "localRoot": "${workspaceRoot}",
-            "remoteRoot": "/home/app/",
+            "remoteRoot": "/srv/app/",
             "protocol": "inspector",
-            "trace": "verbose",
-            "skipFiles": [
-              "<node_internals>/**"
-            ]
+            
           }
        
     ]
