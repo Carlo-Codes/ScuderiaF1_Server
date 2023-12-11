@@ -10,12 +10,12 @@ import {CognitoJwtVerifier} from "aws-jwt-verify"
 import {updateRacesApiStore} from './data/dataPosting'
 import { downloadAsset } from './data/dataFetch';
 
-let config = require('./db/knexfile')
+let config = require('./db/knexfile')     
 
 
 export const cognitoClient = new CognitoIdentityProviderClient({region:env.REGION})
 
-export const cognitoPoolData = {
+export const cognitoPoolData = { 
     UserPoolId: env.POOL_ID,
     ClientId: env.CLIENT_ID,
  }
@@ -29,20 +29,20 @@ export const verifier = CognitoJwtVerifier.create({
 const port = env.PORT
 export const db = knex(config.development)
 
-console.log("hello from the server")
+console.log("hello from the server")  
 
 app.listen(port,()=>{
     console.log("server running on port :")
-    console.log(port)
+    console.log(port) 
 })
+  
+//downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', './downloadedAssets/png.png')
+//updateRacesApiStore() 
 
-downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', './downloadedAssets/png.png')
-//updateRacesApiStore()
-/* 
-createUserTable();
+/* createUserTable();
 createDriverTable();
 createLeagesTable();
 createTeamsTable(); 
 createRacesApiStore();
 createDriverApiStore();
-*/
+ */

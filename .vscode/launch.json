@@ -2,14 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach",
-            "port": 9229,
+            "name": "Attach Id API",
+            "type": "node",
             "request": "attach",
+            "port": 9229,
+            "address": "127.0.0.1",
+            "restart": true,
+            "sourceMaps": true,
+            "smartStep": true,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/home/app/",
+            "protocol": "inspector",
+            "trace": "verbose",
             "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "node"
-        }
+              "<node_internals>/**"
+            ]
+          }
        
     ]
   }

@@ -6,5 +6,5 @@ RUN apt-get update && \
     apt-get install -y git
 COPY . .
 EXPOSE 7000
-CMD ["node", "server/main.js"]
+
 

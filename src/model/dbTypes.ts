@@ -7,11 +7,11 @@ export interface User{
 export interface Driver {
     id:number,
     driverId:string,
-    number:number,
+    number:number, 
     code:string,
     url:URL,
     firstName:string,
-    surname:string,
+    surname:string, 
     DOB:Date,
     nationality:string
     dateAdded:Date
