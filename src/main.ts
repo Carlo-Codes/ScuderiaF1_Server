@@ -37,8 +37,6 @@ app.listen(port,()=>{
     console.log(port) 
 }) 
 
-
-const baseDir = path.join(__dirname, '..', 'client', 'assets')
   
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 
@@ -50,5 +48,5 @@ createRacesApiStore();
 createDriverApiStore(); */
 
 
-updateRacesApiStore() 
-//updateDriversApiStore()
+//updateRacesApiStore() 
+updateDriversApiStore()

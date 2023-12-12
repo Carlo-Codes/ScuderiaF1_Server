@@ -27,7 +27,7 @@ export interface apiSportsResponseBinding{
     parameters:object,
     errors: string[],
     results:number,
-    reponse: apiSportsDriverRankRes[] | apiSportsRacesRes[] //|| somethign else
+    response: apiSportsDriverRankRes[] | apiSportsRacesRes[] //|| somethign else
 }
 
 export interface apiSportsResponse{
@@ -59,5 +59,8 @@ export interface apiSportsRacesRes{
     id:number,
     competition : apiSportsCompetition,
     circuit:apiSportsCircuit,
-
+    season: number,
+    type: string,
+    laps: object,
+    fastest_lap: object
 }
