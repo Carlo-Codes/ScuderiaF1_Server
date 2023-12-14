@@ -48,5 +48,5 @@ createRacesApiStore();
 createDriverApiStore(); */
 
 
-//updateRacesApiStore() 
+updateRacesApiStore() 
 updateDriversApiStore()

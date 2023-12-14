@@ -1,4 +1,5 @@
 import { fstat } from 'fs';
+import { ServerResponse } from 'http';
 import fetch from 'node-fetch'
 import * as fs from 'node:fs/promises';
 
@@ -19,8 +20,12 @@ export async function getFromApiSports(url:string):Promise<object>{
 
 export async function downloadAsset(url:string, filename:string){
     try {
-        const asset = await fetch(url)
-        const data = await asset.buffer()
+        const res = await fetch(url)
+        if(res.status != 200){
+            console.log('error downloading imager, try again')
+            return 
+        }
+        const data = await res.buffer()
         await fs.writeFile(filename,data)
         console.log('image saved')
     } catch (err:unknown) {

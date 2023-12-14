@@ -57,8 +57,8 @@ export interface apiSportsCircuit{
 
 export interface apiSportsRacesRes{
     id:number,
-    competition : apiSportsCompetition,
-    circuit:apiSportsCircuit,
+    competition: apiSportsCompetition,
+    circuit: apiSportsCircuit,
     season: number,
     type: string,
     laps: object,

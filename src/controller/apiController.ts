@@ -202,3 +202,6 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
     }
 }
 
+export const getRaceData : RequestHandler = async (req,res,next) => {
+    
+}
