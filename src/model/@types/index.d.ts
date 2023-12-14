@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { draftTeam } from '../dbTypes';
 
 declare module 'knex/types/tables' {
     interface Tables{
@@ -28,6 +29,12 @@ declare module 'knex/types/tables' {
 declare module 'knex/types/tables' {
     interface Tables{
         league:League;
+    }
+}
+
+declare module 'knex/types/tables' {
+    interface Tables{
+        draftTeams:draftTeam;
     }
 }
 

@@ -1,3 +1,5 @@
+import {apiSportsResponseBinding} from './apiSportsResponseTypes'
+
 export interface User{
     id:number;
     email:string;
@@ -25,18 +27,26 @@ export interface Team{
     dnf_driver_id:number,
     user_id:number
     league_id?:number
+    competion_id:number
 }
+
+export interface draftTeam extends Omit<Team, 'competion_id'>{
+    competion_id?:number
+}
+
 export interface League{
     id:number,
     user_id:number,
     league_name:string,
+    inviteCode:string
 }
 
 export interface RacesApiStore{
     id:number,
-    response:object
+    response:apiSportsResponseBinding
 }
 
 export interface DriverApiStore{
-    response:object
+    id:number,
+    response:apiSportsResponseBinding
 }

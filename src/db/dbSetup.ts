@@ -29,14 +29,27 @@ async function createTeamsTable() {
     table.foreign('user_id').references('users.id')
     table.integer('league_id').defaultTo(null)
     table.foreign('league_id').references('leagues.id')
+    table.integer('competition_id')
     table.integer('tier1_driver_id').defaultTo(null)
-    table.foreign('tier1_driver_id').references('drivers.id')
     table.integer('tier2_driver_id').defaultTo(null)
-    table.foreign('tier2_driver_id').references('drivers.id')
     table.integer('tier3_driver_id').defaultTo(null)
-    table.foreign('tier3_driver_id').references('drivers.id')
     table.integer('dnf_driver_id').defaultTo(null)
-    table.foreign('dnf_driver_id').references('drivers.id')
+    table.string('team_name').notNullable()
+  })
+}
+
+async function createDraftTeamsTable() {
+  await db.schema.withSchema('public').createTable('draftTeams', function (table: Knex.CreateTableBuilder){
+    table.bigIncrements('id').primary()
+    table.integer('user_id').notNullable()
+    table.foreign('user_id').references('users.id')
+    table.integer('league_id').defaultTo(null)
+    table.integer('competition_id').defaultTo(null)
+    table.foreign('league_id').references('leagues.id')
+    table.integer('tier1_driver_id').defaultTo(null)
+    table.integer('tier2_driver_id').defaultTo(null)
+    table.integer('tier3_driver_id').defaultTo(null)
+    table.integer('dnf_driver_id').defaultTo(null)
     table.string('team_name').notNullable()
   })
 }
@@ -47,6 +60,7 @@ async function createLeagesTable(){
     table.integer('user_id')
     table.foreign('user_id').references('users.id')
     table.string('league_name')
+    table.string('inviteCode')
   })
 }
 
@@ -65,9 +79,11 @@ async function createDriverApiStore(){
 }
 
 
+
+
  
  
-  export{createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
   
  
   

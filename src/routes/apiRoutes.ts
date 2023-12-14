@@ -17,6 +17,8 @@ router.post("/newTeam", Controller.newTeam)
 router.post("/newLeague", Controller.newLeague)
 router.post("/updateTeam", Controller.updateTeam)
 
+router.get("/getRaceData", Controller.getRaceData)
+router.get("")
 
 
 router.get("/authPassword", Controller.authenticateUser)

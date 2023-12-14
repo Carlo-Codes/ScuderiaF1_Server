@@ -44,6 +44,14 @@ export interface editTeamRequest extends newTeamRequest {
     teamId:string
 }
 
+export interface getLeagueDataReq extends tokenAuthRequest{
+    inviteCode:string
+}
+
+export interface getTeamsinLeageReq extends tokenAuthRequest{
+    id:number
+}
+
 
 
 
