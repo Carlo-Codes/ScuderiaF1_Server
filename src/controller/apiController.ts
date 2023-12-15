@@ -1,10 +1,11 @@
 import {RequestHandler} from "express"
 import { cognitoPoolData, db, verifier} from "../main";
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam } from "../model/dbTypes";
-import { editTeamRequest, newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest, getLeagueDataReq, getTeamsinLeageReq } from "../model/HTTPtypes";
+import { editTeamRequest, newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest, getLeagueDataReq, getTeamsinLeageReq, dataResponse, addTeamToLeagueReq } from "../model/HTTPtypes";
 import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { cogAuthPassword, cogAuthToken, cogConfirmUser, cogDelUser, cogGetUser, cogResendConfirmationCode, cogSignup } from "./aws-sdk/cognito";
 import { Knex } from "knex";
+import { apiSportsDriverRankRes, apiSportsRacesRes } from "../model/apiSportsResponseTypes";
 
 
 export const ping : RequestHandler = async  (req, res, next) => {
@@ -203,6 +204,48 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
     }
 }
 
+export const getData : RequestHandler = async (req,res,next) => {
+    try {
+        const authReq : tokenAuthRequest = req.body
+        const reqUser = await cogGetUser(authReq.token)
+        const cogEamil = reqUser.UserAttributes![2].Value
+        if(reqUser.Username){
+            const user = await db<User>('users').where('email',cogEamil)
+            const dbRaceData = await db<RacesApiStore>('RacesApiStore')
+            .where('id', '=','1').returning('*')
+            const dbDriverData = await db<DriverApiStore>('DriverApiStore')
+            .where('id', '=','1').returning('*')
+            const draftTeams = await db<draftTeam>('draftTeams')
+            .where('user_id', '=', user[0].id)
+            .returning('*')
+            const teams = await db<Team>('Teams')
+            .where('user_id', '=', user[0].id)
+            .returning('*')
+
+            const raceData = dbRaceData[0].response.response as apiSportsRacesRes[]
+            const driverData = dbDriverData[0].response.response as apiSportsDriverRankRes[]
+
+            const response:dataResponse ={
+                raceData:raceData,
+                driverData:driverData,
+                userDraftTeams:draftTeams,
+                userTeams:teams,
+            } 
+            res.send(response)
+
+        } else {
+            res.send('cannot authorise').status(401)
+        }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+
+
+//depricated
 export const getRaceData : RequestHandler = async (req,res,next) => {
     try {
         const authReq : tokenAuthRequest = req.body
@@ -230,45 +273,6 @@ export const getDriverData : RequestHandler = async (req,res,next) => {
             const payload = await db<DriverApiStore>('DriverApiStore')
             .where('id', '=','1').returning('*')
             res.send(payload[0].response.response)            
-        } else {
-            res.send('cannot authorise').status(401)
-        }
-    } catch (err:unknown) {
-        if(err instanceof Error){
-            console.log(err)
-            res.send(err.message).status(400)
-        }
-    }
-}
-
-export const getLeagueData : RequestHandler = async (req,res,next) => {
-    try {
-        const leagueReq : getLeagueDataReq = req.body
-        const cogUser = await cogGetUser(leagueReq.token)
-        if(cogUser.Username){
-            const payload = await db<League>('league')
-            .where('inviteCode', '=', leagueReq.inviteCode).returning('*')
-            res.send(payload[0])            
-        } else {
-            res.send('cannot authorise').status(401)
-        }
-    } catch (err:unknown) {
-        if(err instanceof Error){
-            console.log(err)
-            res.send(err.message).status(400)
-        }
-    }
-}
-
-export const getTeamsinLegaue : RequestHandler = async (req,res,next) => {
-    try {
-        const teamsinLequeReg : getTeamsinLeageReq = req.body
-        const cogUser = await cogGetUser(teamsinLequeReg.token)
-        if(cogUser.Username){
-            const payload = await db<Team>('teams')
-            .where('league_id', '=', teamsinLequeReg.id)
-            .returning('*')
-            res.send(payload)
         } else {
             res.send('cannot authorise').status(401)
         }
@@ -317,6 +321,85 @@ export const getUserTeams : RequestHandler = async (req, res, next) => {
             res.send('cannot authorise').status(401)
         }
     } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+//
+
+export const getLeagueData : RequestHandler = async (req,res,next) => {
+    try {
+        const leagueReq : getLeagueDataReq = req.body
+        const cogUser = await cogGetUser(leagueReq.token)
+        if(cogUser.Username){
+            const payload = await db<League>('league')
+            .where('inviteCode', '=', leagueReq.inviteCode).returning('*')
+            res.send(payload[0])            
+        } else {
+            res.send('cannot authorise').status(401)
+        }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+
+export const getTeamsinLegaue : RequestHandler = async (req,res,next) => {
+    try {
+        const teamsinLequeReg : getTeamsinLeageReq = req.body
+        const cogUser = await cogGetUser(teamsinLequeReg.token)
+        if(cogUser.Username){
+            const payload = await db<Team>('teams')
+            .where('league_id', '=', teamsinLequeReg.id)
+            .returning('*')
+            res.send(payload)
+        } else {
+            res.send('cannot authorise').status(401)
+        }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+
+export const joinTeamToLeague : RequestHandler = async (req, res, next) => {
+    try {
+
+        const joinTeamReq : addTeamToLeagueReq = req.body
+        const reqUser = await cogGetUser(joinTeamReq.token)
+        const cogEamil = reqUser.UserAttributes![2].Value
+
+        if(reqUser.Username){
+            const user = await db<User>('users').where('email',cogEamil)
+
+            const team = await db<Team>('Teams')
+            .where('id', '=', joinTeamReq.teamId)
+            
+            if (team[0].user_id != user[0].id){
+                res.send('error, this is not your team')
+            }
+            const league = await db<League>('league')
+            .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
+
+            const dbres = await db<Team>('Teams')
+            .where('id', '=', joinTeamReq.teamId).returning('*')
+            .update({ 
+                league_id:league[0].id,
+            })
+
+            res.send(`Team Added to ${league[0].league_name}`)
+
+        } else {
+            res.send('cannot authorise').status(401)
+        }
+    } catch (err:unknown) {
+
         if(err instanceof Error){
             console.log(err)
             res.send(err.message).status(400)
