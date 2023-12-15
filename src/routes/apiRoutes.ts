@@ -17,8 +17,10 @@ router.post("/newTeam", Controller.newTeam)
 router.post("/newLeague", Controller.newLeague)
 router.post("/updateTeam", Controller.updateTeam)
 
-router.get("/getRaceData", Controller.getRaceData)
-router.get("")
+router.get("/getData", Controller.getData)
+router.post("/addTeamToLeague",Controller.joinTeamToLeague)
+router.get('/getLeagueData',Controller.getLeagueData)
+router.get('/getTeamsInLeague', Controller.getTeamsinLeague)
 
 
 router.get("/authPassword", Controller.authenticateUser)

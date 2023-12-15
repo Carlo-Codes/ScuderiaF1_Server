@@ -348,7 +348,7 @@ export const getLeagueData : RequestHandler = async (req,res,next) => {
     }
 }
 
-export const getTeamsinLegaue : RequestHandler = async (req,res,next) => {
+export const getTeamsinLeague : RequestHandler = async (req,res,next) => {
     try {
         const teamsinLequeReg : getTeamsinLeageReq = req.body
         const cogUser = await cogGetUser(teamsinLequeReg.token)
