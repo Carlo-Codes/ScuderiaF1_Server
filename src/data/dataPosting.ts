@@ -17,11 +17,11 @@ export async function updateRacesApiStore(){
     try {
         const res = await getFromApiSports(racesUrl) as apiSportsResponseBinding
         const races = res.response as apiSportsRacesRes[]
-        updateCircuitPictures(races) 
+        //updateCircuitPictures(races) 
         const currentStore = await db<RacesApiStore>('RacesApiStore').where('id', '1')
         if(currentStore[0]){
             await db<RacesApiStore>('RacesApiStore').where('id', '1').update({
-                response:res
+                response:res 
             })
         }else {
             await db<RacesApiStore>('RacesApiStore').insert({
@@ -39,7 +39,7 @@ export async function updateDriversApiStore(){
     try {
         const res = await getFromApiSports(driverUrl) as apiSportsResponseBinding 
         const drivers = res.response as apiSportsDriverRankRes[]
-        updateDriverPictures(drivers);
+        //updateDriverPictures(drivers);
         const currentStore = await db<DriverApiStore>('DriverApiStore').where('id', '1')
         if(currentStore[0]){ 
             await db<DriverApiStore>('DriverApiStore').where('id', '1').update({

@@ -50,7 +50,7 @@ export interface getLeagueDataReq extends tokenAuthRequest{
 }
 
 export interface getTeamsinLeageReq extends tokenAuthRequest{
-    id:number
+    inviteCode:string
 }
 
 export interface dataResponse {

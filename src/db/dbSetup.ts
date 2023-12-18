@@ -27,8 +27,6 @@ async function createTeamsTable() {
     table.bigIncrements('id').primary()
     table.integer('user_id').notNullable()
     table.foreign('user_id').references('users.id')
-    table.integer('league_id').defaultTo(null)
-    table.foreign('league_id').references('leagues.id')
     table.integer('competition_id')
     table.integer('tier1_driver_id').defaultTo(null)
     table.integer('tier2_driver_id').defaultTo(null)
@@ -43,11 +41,9 @@ async function createDraftTeamsTable() {
     table.bigIncrements('id').primary()
     table.integer('user_id').notNullable()
     table.foreign('user_id').references('users.id')
-    table.integer('league_id').defaultTo(null)
     table.integer('competition_id').defaultTo(null)
-    table.foreign('league_id').references('leagues.id')
     table.integer('tier1_driver_id').defaultTo(null)
-    table.integer('tier2_driver_id').defaultTo(null)
+    table.integer('tier2_driver_id').defaultTo(null) 
     table.integer('tier3_driver_id').defaultTo(null)
     table.integer('dnf_driver_id').defaultTo(null)
     table.string('team_name').notNullable()
@@ -57,34 +53,39 @@ async function createDraftTeamsTable() {
 async function createLeagesTable(){
   await db.schema.withSchema('public').createTable('leagues', function(table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary()
-    table.integer('user_id')
-    table.foreign('user_id').references('users.id')
+    table.integer('owner_user_id')
+    table.foreign('owner_user_id').references('users.id')
     table.string('league_name')
-    table.string('inviteCode')
+    table.string('inviteCode').unique().notNullable()
   })
 }
+
+async function createTeamLeagueRelationTable(){
+  await db.schema.withSchema('public').createTable('leagueTeamRelation', function (table: Knex.CreateTableBuilder){
+    table.bigIncrements('id').primary() 
+    table.integer('team_id').references('teams.id')
+    table.string('league_inviteCode').references('leagues.inviteCode')
+  })
+}
+
 
 async function createRacesApiStore(){
   await db.schema.withSchema('public').createTable('RacesApiStore', function (table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary()
-    table.json('response')
+    table.json('response') 
   })
 }
 
-async function createDriverApiStore(){
+async function createDriverApiStore(){ 
   await db.schema.withSchema('public').createTable('DriverApiStore', function (table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary()
-    table.json('response')
+    table.json('response') 
   })
 }
 
-
-
-
  
- 
-  export{createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
-  
+  export{createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+   
  
   
  

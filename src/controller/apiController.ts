@@ -1,12 +1,12 @@
 import {RequestHandler} from "express"
 import { cognitoPoolData, db, verifier} from "../main";
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam } from "../model/dbTypes";
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
 import { editTeamRequest, newTeamRequest, newUserRequest, DBResponse, newLeagueRequest, authenticationRequest,confirmUserRequest, resendConfirmationCodeRequest, tokenAuthRequest, getLeagueDataReq, getTeamsinLeageReq, dataResponse, addTeamToLeagueReq } from "../model/HTTPtypes";
 import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { cogAuthPassword, cogAuthToken, cogConfirmUser, cogDelUser, cogGetUser, cogResendConfirmationCode, cogSignup } from "./aws-sdk/cognito";
 import { Knex } from "knex";
 import { apiSportsDriverRankRes, apiSportsRacesRes } from "../model/apiSportsResponseTypes";
-
+import { randomBytes } from "node:crypto";
 
 export const ping : RequestHandler = async  (req, res, next) => {
     res.send("pong");
@@ -140,12 +140,14 @@ export const newTeam : RequestHandler = async (req, res, next) => {
 export const newLeague : RequestHandler = async (req,res,next) => {
     try {
         const leagueRequest : newLeagueRequest = req.body
+        const inviteCode = crypto.randomUUID()
         const payload = await cogGetUser(leagueRequest.token)
         const cogEamil = payload.UserAttributes![2].Value
         const user = await db<User>('users').where('email',cogEamil)
         const dbres = await db<League>('leagues').insert({
-            user_id:user[0].id,
-            league_name:leagueRequest.league_name
+            owner_user_id:user[0].id,
+            league_name:leagueRequest.league_name,
+            inviteCode:inviteCode,
         }).returning('*')
 
         const okMess = `${leagueRequest.league_name} succesfully added to database`
@@ -218,7 +220,7 @@ export const getData : RequestHandler = async (req,res,next) => {
             const draftTeams = await db<draftTeam>('draftTeams')
             .where('user_id', '=', user[0].id)
             .returning('*')
-            const teams = await db<Team>('Teams')
+            const teams = await db<Team>('teams')
             .where('user_id', '=', user[0].id)
             .returning('*')
 
@@ -313,7 +315,7 @@ export const getUserTeams : RequestHandler = async (req, res, next) => {
         const cogEamil = reqUser.UserAttributes![2].Value
         if(reqUser.Username){
             const user = await db<User>('users').where('email',cogEamil)
-            const payload = await db<Team>('Teams')
+            const payload = await db<Team>('teams')
             .where('user_id', '=', user[0].id)
             .returning('*')
             res.send(payload)
@@ -334,7 +336,7 @@ export const getLeagueData : RequestHandler = async (req,res,next) => {
         const leagueReq : getLeagueDataReq = req.body
         const cogUser = await cogGetUser(leagueReq.token)
         if(cogUser.Username){
-            const payload = await db<League>('league')
+            const payload = await db<League>('leagues')
             .where('inviteCode', '=', leagueReq.inviteCode).returning('*')
             res.send(payload[0])            
         } else {
@@ -352,11 +354,26 @@ export const getTeamsinLeague : RequestHandler = async (req,res,next) => {
     try {
         const teamsinLequeReg : getTeamsinLeageReq = req.body
         const cogUser = await cogGetUser(teamsinLequeReg.token)
+
         if(cogUser.Username){
-            const payload = await db<Team>('teams')
-            .where('league_id', '=', teamsinLequeReg.id)
-            .returning('*')
-            res.send(payload)
+
+            const leagueTeamsIds = await db<LeagueTeamRelation>('leagueTeamRelation')
+            .where('league_inviteCode', '=', teamsinLequeReg.inviteCode).returning('team_id')
+
+            if(leagueTeamsIds.length === 0){
+                throw new Error("no leagues with that invite code.")
+            }
+
+        
+            let teams:Team[] = []
+            for (let i = 0; i < leagueTeamsIds.length; i++){
+                const team = await db<Team>('teams')
+                .where('id', '=', leagueTeamsIds[i].team_id)
+                .returning('*')
+                teams.push(team[0])
+            }
+            
+            res.send(teams)
         } else {
             res.send('cannot authorise').status(401)
         }
@@ -374,28 +391,41 @@ export const joinTeamToLeague : RequestHandler = async (req, res, next) => {
         const joinTeamReq : addTeamToLeagueReq = req.body
         const reqUser = await cogGetUser(joinTeamReq.token)
         const cogEamil = reqUser.UserAttributes![2].Value
-
+        const teamLeague = await db<LeagueTeamRelation>('leagueTeamRelation')
+        .where('team_id', '=', joinTeamReq.teamId).returning('*')
         if(reqUser.Username){
-            const user = await db<User>('users').where('email',cogEamil)
+            if(!teamLeague[0]){
+                const user = await db<User>('users').where('email',cogEamil)
 
-            const team = await db<Team>('Teams')
-            .where('id', '=', joinTeamReq.teamId)
-            
-            if (team[0].user_id != user[0].id){
-                res.send('error, this is not your team')
+                const team = await db<Team>('teams')
+                .where('id', '=', joinTeamReq.teamId)
+                
+                if (team[0].user_id != user[0].id){
+                    throw new Error('error, this is not your team')
+                }
+
+                const league = await db<League>('leagues')
+                .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
+
+                if(!league[0]){
+                    throw new Error("League invite not valid")
+                } else{
+                    const dbres = await db<LeagueTeamRelation>('leagueTeamRelation')
+                    .insert({
+                        team_id:joinTeamReq.teamId,
+                        league_inviteCode:joinTeamReq.inviteCode,
+                        
+                    })
+                    res.send(`Team Added to ${league[0].league_name}`)
+                }
+
+    
+            } else{
+                throw new Error("Relationship already exists")
             }
-            const league = await db<League>('league')
-            .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
+            
 
-            const dbres = await db<Team>('Teams')
-            .where('id', '=', joinTeamReq.teamId).returning('*')
-            .update({ 
-                league_id:league[0].id,
-            })
-
-            res.send(`Team Added to ${league[0].league_name}`)
-
-        } else {
+        } else { 
             res.send('cannot authorise').status(401)
         }
     } catch (err:unknown) {
