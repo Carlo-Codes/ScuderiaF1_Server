@@ -23,8 +23,8 @@ router.get('/getLeagueData',Controller.getLeagueData)
 router.get('/getTeamsInLeague', Controller.getTeamsinLeague)
 
 
-router.get("/authPassword", Controller.authenticateUser)
-router.get("/refreshToken", Controller.refreshToken)
+router.post("/authPassword", Controller.authenticateUser)
+router.post("/refreshToken", Controller.refreshToken)
 
 
 export default router  

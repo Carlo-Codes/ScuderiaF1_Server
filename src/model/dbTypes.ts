@@ -30,6 +30,15 @@ export interface Team{
     competion_id:number
 }
 
+export interface TeamResults{
+    id:number,
+    team_id:number,
+    tier1_driver_id:number,
+    tier2_driver_id:number,
+    tier3_driver_id:number,
+    dnf_driver_id:number,
+}
+
 export interface draftTeam extends Omit<Team, 'competion_id'>{
     competion_id?:number
 }

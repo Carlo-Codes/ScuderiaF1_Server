@@ -41,7 +41,7 @@ export const newUser : RequestHandler = async (req, res, next) => {
             const dbres = await db<User>('users').insert({email:userEmail}).returning('*')
             const newUserRes = checkdbRes(dbres[0],okMess, errMss)
             if(newUserRes.code = 200){
-                res.send(newUserRes.message).status(newUserRes.code)
+                res.send(cogRes).status(newUserRes.code)
             }else{
                 const cogDelRes = await cogDelUser(userEmail,cognitoPoolData.UserPoolId)
             }
@@ -51,7 +51,7 @@ export const newUser : RequestHandler = async (req, res, next) => {
         if(err instanceof Error){
 
             console.log(err.message)
-            res.send(err.message).status(400)
+            res.status(400).send(err.message)
         }
     }
     next(); 
@@ -80,7 +80,7 @@ export const confirmUser : RequestHandler = async (req, res, next) => {
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
-            res.send(err.message).status(400)
+            res.status(400).send(err.message)
         }
     }
 }
@@ -96,8 +96,7 @@ export const authenticateUser : RequestHandler = async (req, res,next) => {
  
     } catch (err:unknown) { 
         if(err instanceof Error){
-            console.log(err)
-            res.send(err.message).status(400)
+            res.status(400).send(err.message)
         }
     }
     
@@ -208,11 +207,14 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
 
 export const getData : RequestHandler = async (req,res,next) => {
     try {
-        const authReq : tokenAuthRequest = req.body
+        const token = req.headers['authorization']?.split('Bearer')[1]
+        console.log(token)
+        const authReq : tokenAuthRequest = {token:token as string};
         const reqUser = await cogGetUser(authReq.token)
         const cogEamil = reqUser.UserAttributes![2].Value
         if(reqUser.Username){
             const user = await db<User>('users').where('email',cogEamil)
+            console.log(user)
             const dbRaceData = await db<RacesApiStore>('RacesApiStore')
             .where('id', '=','1').returning('*')
             const dbDriverData = await db<DriverApiStore>('DriverApiStore')
