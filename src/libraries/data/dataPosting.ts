@@ -1,7 +1,7 @@
 import {downloadAsset, getFromApiSports} from './dataFetch'
-import {db} from '../main'
-import { DriverApiStore, RacesApiStore } from '../model/dbTypes';
-import {apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../model/apiSportsResponseTypes'
+import {db} from '../../services/db/knexfile'
+import { DriverApiStore, RacesApiStore } from '../../model/dbTypes';
+import {apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../../model/apiSportsResponseTypes'
 import path from 'path';
 import * as fs from 'node:fs/promises';
 const seasonYear = 2023

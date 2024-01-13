@@ -1,6 +1,6 @@
-import type { Knex } from "knex";
+import knex, { Knex } from 'knex';
 import { env } from 'process';
-// Update with your config settings.
+// Update with your config settings
 
 const config: { [key: string]: Knex.Config } = {
   development: {
@@ -47,5 +47,6 @@ const config: { [key: string]: Knex.Config } = {
   }
 
 };
+export const db = knex(config.development)
 
-module.exports = config;
+

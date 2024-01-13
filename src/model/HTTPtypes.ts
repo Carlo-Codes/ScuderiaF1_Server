@@ -53,11 +53,19 @@ export interface getTeamsinLeageReq extends tokenAuthRequest{
     inviteCode:string
 }
 
+export interface LeagueAndTeams{
+    leauge: League,
+    teamsInLeage : Team[]
+}
+
 export interface dataResponse {
     driverData:apiSportsDriverRankRes[],
     raceData:apiSportsRacesRes[],
     userTeams:Team[]
     userDraftTeams:draftTeam[]
+    userLeagues:LeagueAndTeams[]
+    participatingLeague:LeagueAndTeams[]
+
 
 }
 

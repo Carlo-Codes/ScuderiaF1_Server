@@ -1,5 +1,14 @@
 import { Knex } from 'knex';
 import { LeagueTeamRelation, TeamResults, draftTeam } from '../dbTypes';
+import { CognitoAccessTokenPayload } from 'aws-jwt-verify/jwt-model';
+
+declare global {
+    namespace Express {
+    export interface Request {
+       user?: CognitoAccessTokenPayload
+    }
+ }
+}
 
 declare module 'knex/types/tables' {
     interface Tables{
