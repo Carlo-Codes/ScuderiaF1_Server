@@ -1,19 +1,19 @@
-import { RequestHandler } from "express"
+import { RequestHandler, Request } from "express"
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
 import {newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
 
-export const newLeague : RequestHandler = async (req,res,next) => {
+export const newLeague : RequestHandler = async (req:Request,res,next) => {
     try {
         const leagueRequest : newLeagueRequest = req.body
-        const inviteCode = crypto.randomUUID()
+        const inviteCode = crypto.randomUUID() 
         const cogEmail = req.user
         if(cogEmail){
-            const user = await db<User>('users').where('email',cogEmail.username)
-            const dbres = await db<League>('leagues').insert({
-                owner_user_id:user[0].id,
+            const user = await db<User>('users').where('email',cogEmail.sub)
+            const dbres = await db<League>('leagues').insert({ 
+                owner_user_id:user[0].id, 
                 league_name:leagueRequest.league_name,
                 inviteCode:inviteCode,
             }).returning('*')
@@ -39,7 +39,7 @@ export const newLeague : RequestHandler = async (req,res,next) => {
     }
 }
 
-export const getLeagueData : RequestHandler = async (req,res,next) => {
+export const getLeagueData : RequestHandler = async (req:Request,res,next) => {
     try {
         const leagueReq : getLeagueDataReq = req.body
         const cogUser = req.user
@@ -58,7 +58,7 @@ export const getLeagueData : RequestHandler = async (req,res,next) => {
     }
 }
 
-export const getTeamsinLeague : RequestHandler = async (req,res,next) => {
+export const getTeamsinLeague : RequestHandler = async (req:Request,res,next) => {
     try {
         const teamsinLequeReg : getTeamsinLeageReq = req.body
         const cogUser = req.user

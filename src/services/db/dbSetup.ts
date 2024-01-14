@@ -79,7 +79,7 @@ async function createTeamLeagueRelationTable(){
   await db.schema.withSchema('public').createTable('leagueTeamRelation', function (table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary() 
     table.integer('team_id').references('teams.id')
-    table.string('league_inviteCode').references('leagues.inviteCode')
+    table.integer('league_id').references('leagues.id')
   })
 }
 

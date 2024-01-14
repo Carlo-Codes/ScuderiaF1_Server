@@ -1,8 +1,8 @@
-import { RequestHandler } from "express"
+import { RequestHandler, Request } from "express"
 import {RacesApiStore} from "../model/dbTypes";
 import { db } from "../services/db/knexfile";
 
-export const getRaceData : RequestHandler = async (req,res,next) => {
+export const getRaceData : RequestHandler = async (req:Request,res,next) => {
     try {
         
         const cogUser = req.user

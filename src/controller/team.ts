@@ -1,15 +1,16 @@
-import { RequestHandler } from "express"
+import {RequestHandler, Request}  from "express"
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
 import {newTeamRequest, editTeamRequest, tokenAuthRequest, addTeamToLeagueReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
 
-export const newTeam : RequestHandler = async (req, res, next) => {
+
+export const newTeam : RequestHandler = async (req:Request, res, next) => {
     try {
         const teamRequest:newTeamRequest = req.body
         const cogEamil = req.user
-        const user = await db<User>('users').where('email',cogEamil?.username)
+        const user = await db<User>('users').where('email',cogEamil?.sub)
         const dbres = await db<Team>('teams').insert({
             team_name:teamRequest.team_name,
             user_id:user[0].id,
@@ -38,7 +39,7 @@ export const newTeam : RequestHandler = async (req, res, next) => {
     
 }
 
-export const updateTeam: RequestHandler = async (req,res,next) => {
+export const updateTeam: RequestHandler = async (req:Request,res,next) => {
     try {
         const editTeamReq : editTeamRequest = req.body
         const cogEamil = req.user
@@ -62,12 +63,12 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
     }
 }
 
-export const getUserDraftTeams : RequestHandler = async (req, res, next) => {
+export const getUserDraftTeams : RequestHandler = async (req:Request, res, next) => {
     try {
         const draftTeamReq : tokenAuthRequest = req.body
         const cogEamil = req.user
         if(cogEamil){
-            const user = await db<User>('users').where('email',cogEamil.username)
+            const user = await db<User>('users').where('email',cogEamil.sub)
             const payload = await db<draftTeam>('draftTeams')
             .where('user_id', '=', user[0].id)
             .returning('*')
@@ -83,12 +84,12 @@ export const getUserDraftTeams : RequestHandler = async (req, res, next) => {
     }
 }
 
-export const getUserTeams : RequestHandler = async (req, res, next) => {
+export const getUserTeams : RequestHandler = async (req:Request, res, next) => {
     try {
         const draftTeamReq : tokenAuthRequest = req.body
         const cogEamil = req.user
         if(cogEamil){
-            const user = await db<User>('users').where('email',cogEamil.username)
+            const user = await db<User>('users').where('email',cogEamil.sub)
             const payload = await db<Team>('teams')
             .where('user_id', '=', user[0].id)
             .returning('*')
@@ -104,7 +105,7 @@ export const getUserTeams : RequestHandler = async (req, res, next) => {
     }
 }
 
-export const joinTeamToLeague : RequestHandler = async (req, res, next) => {
+export const joinTeamToLeague : RequestHandler = async (req:Request, res, next) => {
     try {
 
         const joinTeamReq : addTeamToLeagueReq = req.body
@@ -113,7 +114,7 @@ export const joinTeamToLeague : RequestHandler = async (req, res, next) => {
         .where('team_id', '=', joinTeamReq.teamId).returning('*')
         if(cogEamil){
             if(!teamLeague[0]){
-                const user = await db<User>('users').where('email',cogEamil.username)
+                const user = await db<User>('users').where('email',cogEamil.sub)
 
                 const team = await db<Team>('teams')
                 .where('id', '=', joinTeamReq.teamId)

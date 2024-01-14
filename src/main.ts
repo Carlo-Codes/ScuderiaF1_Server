@@ -1,4 +1,5 @@
 import { env } from 'process';
+import 'dotenv/config'
 import app from './server'
 import 'dotenv/config'
 import {createTeamsResultsTable, createDraftTeamsTable, createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore, createDriverApiStore, createTeamLeagueRelationTable } from './services/db/dbSetup';
@@ -13,7 +14,7 @@ app.listen(port,()=>{
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 
-createUserTable();
+/* createUserTable();
 createDriverTable();
 createLeagesTable();
 createTeamsTable(); 
@@ -25,4 +26,6 @@ createDraftTeamsTable();
 updateRacesApiStore();
 updateDriversApiStore(); 
 createTeamLeagueRelationTable();
-createTeamsResultsTable();
+createTeamsResultsTable(); */
+
+

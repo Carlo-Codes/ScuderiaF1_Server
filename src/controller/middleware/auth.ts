@@ -1,7 +1,8 @@
-import { RequestHandler } from "express";
+import { Request, RequestHandler } from "express";
 import { cogVerifyToken } from "../../services/aws-sdk/cognitoJWTVerifier";
 
-export const authenticateToken : RequestHandler = async (req, res, next) => {
+
+export const authenticateToken : RequestHandler = async (req:Request, res, next) => {
     try {
         const token = req.headers['authorization']?.split('Bearer')[1]
         if(token){

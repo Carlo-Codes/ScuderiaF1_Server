@@ -1,8 +1,8 @@
-import { RequestHandler } from "express"
+import { RequestHandler, Request } from "express"
 import { DriverApiStore} from "../model/dbTypes";
 import { db } from "../services/db/knexfile";
 
-export const getDriverData : RequestHandler = async (req,res,next) => {
+export const getDriverData : RequestHandler = async (req:Request,res,next) => {
     try {
         const cogUser = req.user
         if((cogUser)){

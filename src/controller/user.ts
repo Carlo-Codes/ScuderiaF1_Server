@@ -1,10 +1,11 @@
-import { RequestHandler } from "express"
+import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
 import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
+
 
 
 export const newUser : RequestHandler = async (req, res, next) => {
@@ -15,9 +16,10 @@ export const newUser : RequestHandler = async (req, res, next) => {
         const errMss = `${userEmail} couldnt be added to database`
 
         const cogRes = await cogSignup(userEmail,userRequest.password,userEmail);
+        
 
         if(cogRes.UserSub){
-            const dbres = await db<User>('users').insert({email:userEmail}).returning('*')
+            const dbres = await db<User>('users').insert({email:cogRes.UserSub}).returning('*')
             const newUserRes = checkdbRes(dbres[0],okMess, errMss)
             if(newUserRes.code = 200){
                 res.send(cogRes).status(newUserRes.code)
@@ -79,13 +81,11 @@ export const authenticateUser : RequestHandler = async (req, res,next) => {
     
 }
 
-export const getData : RequestHandler = async (req,res,next) => {
+export const getData : RequestHandler = async (req:Request,res,next) => {
     try {
-        const token = req.headers['authorization']?.split('Bearer')[1]
-        console.log(token)
         const cogEamil = req.user
         if(cogEamil){
-            const user = await db<User>('users').where('email',cogEamil.username)
+            const user = await db<User>('users').where('email',cogEamil.sub)
             console.log(user)
             const dbRaceData = await db<RacesApiStore>('RacesApiStore')
             .where('id', '=','1').returning('*')

@@ -2,7 +2,6 @@ import { AdminDeleteUserCommand, AdminInitiateAuthCommand, AuthFlowType, Confirm
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { env } from 'process';
 
-
 export const cognitoClient = new CognitoIdentityProviderClient({region:env.REGION})
 export const cognitoPoolData = { 
     UserPoolId: env.POOL_ID,
