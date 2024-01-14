@@ -1,5 +1,7 @@
 import express, { RequestHandler } from "express";
-import router from "./routes/apiRoutes"
+import { leagueRouter } from "./routes/league";
+import { userRouter } from "./routes/user";
+import { teamRouter } from "./routes/team";
 import bodyParser from "body-parser";
 
 const app = express()
@@ -29,8 +31,10 @@ app.get('/', function (req, res, next) {
 
 app.get("/ping", ping) 
 
-app.use("/api/", router)
-//app.use("/auth/", authRouter) 
+app.use("/api/user", userRouter)
+app.use("/api/league", leagueRouter)
+app.use("/api/team", teamRouter)
+
 
 
 

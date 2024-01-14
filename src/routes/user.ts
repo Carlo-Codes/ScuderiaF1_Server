@@ -1,12 +1,20 @@
 import express from 'express'
 import * as Controller from '../controller/user'
-let router = express.Router()
-router.post("/newUser", Controller.newUser)
-router.post("/confirmUser", Controller.confirmUser)
-router.post("/resendCode",Controller.resendConfirmationCode)
-router.get("/getData", Controller.getData)
+import {authenticateToken} from '../controller/middleware/auth'
 
-router.post("/authPassword", Controller.authenticateUser)
-router.post("/refreshToken", Controller.refreshToken)
+
+export let userRouter = express.Router()
+
+//insecure methods
+userRouter.post("/newUser", Controller.newUser)
+userRouter.post("/confirmUser", Controller.confirmUser)
+userRouter.post("/resendCode",Controller.resendConfirmationCode)
+
+
+//secure methods
+userRouter.use(authenticateToken)
+userRouter.get("/getData", Controller.getData)
+userRouter.post("/authPassword", Controller.authenticateUser)
+userRouter.post("/refreshToken", Controller.refreshToken)
 
 //router.get("/getUser",)

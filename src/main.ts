@@ -2,7 +2,7 @@ import { env } from 'process';
 import app from './server'
 import 'dotenv/config'
 import {createTeamsResultsTable, createDraftTeamsTable, createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore, createDriverApiStore, createTeamLeagueRelationTable } from './services/db/dbSetup';
-
+import {updateRacesApiStore, updateDriversApiStore} from './libraries/data/dataPosting'
 const port = env.PORT
 console.log("hello from the server")  
 
@@ -13,7 +13,7 @@ app.listen(port,()=>{
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 
-/* createUserTable();
+createUserTable();
 createDriverTable();
 createLeagesTable();
 createTeamsTable(); 
@@ -24,5 +24,5 @@ createDraftTeamsTable();
 
 updateRacesApiStore();
 updateDriversApiStore(); 
-createTeamLeagueRelationTable(); */
-//createTeamsResultsTable();
+createTeamLeagueRelationTable();
+createTeamsResultsTable();

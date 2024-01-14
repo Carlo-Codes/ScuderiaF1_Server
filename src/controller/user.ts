@@ -1,7 +1,8 @@
 import { RequestHandler } from "express"
+import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
-import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest} from '../model/HTTPtypes'
-import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
+import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
+import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
 
@@ -82,11 +83,9 @@ export const getData : RequestHandler = async (req,res,next) => {
     try {
         const token = req.headers['authorization']?.split('Bearer')[1]
         console.log(token)
-        const authReq : tokenAuthRequest = {token:token as string};
-        const reqUser = await cogGetUser(authReq.token)
-        const cogEamil = reqUser.UserAttributes![2].Value
-        if(reqUser.Username){
-            const user = await db<User>('users').where('email',cogEamil)
+        const cogEamil = req.user
+        if(cogEamil){
+            const user = await db<User>('users').where('email',cogEamil.username)
             console.log(user)
             const dbRaceData = await db<RacesApiStore>('RacesApiStore')
             .where('id', '=','1').returning('*')
@@ -107,6 +106,8 @@ export const getData : RequestHandler = async (req,res,next) => {
                 driverData:driverData,
                 userDraftTeams:draftTeams,
                 userTeams:teams,
+                userLeagues:[],
+                participatingLeague:[],
             } 
             res.send(response)
 

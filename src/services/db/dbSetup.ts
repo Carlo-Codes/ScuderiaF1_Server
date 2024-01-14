@@ -1,7 +1,7 @@
 import { env } from 'process';
 import {Knex, TableBuilder, knex} from 'knex'
 import User, { Tables } from 'knex/types/tables';
-import { db } from '../main';
+import { db } from '../db/knexfile'
 
 async function createUserTable(){
     await db.schema.withSchema('public').createTable('users', function (table: Knex.CreateTableBuilder){

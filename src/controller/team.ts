@@ -1,6 +1,6 @@
 import { RequestHandler } from "express"
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
-import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest} from '../model/HTTPtypes'
+import {newTeamRequest, editTeamRequest, tokenAuthRequest, addTeamToLeagueReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
@@ -8,9 +8,8 @@ import { db } from "../services/db/knexfile";
 export const newTeam : RequestHandler = async (req, res, next) => {
     try {
         const teamRequest:newTeamRequest = req.body
-        const payload = await cogGetUser(teamRequest.token)
-        const cogEamil = payload.UserAttributes![2].Value
-        const user = await db<User>('users').where('email',cogEamil)
+        const cogEamil = req.user
+        const user = await db<User>('users').where('email',cogEamil?.username)
         const dbres = await db<Team>('teams').insert({
             team_name:teamRequest.team_name,
             user_id:user[0].id,
@@ -42,8 +41,7 @@ export const newTeam : RequestHandler = async (req, res, next) => {
 export const updateTeam: RequestHandler = async (req,res,next) => {
     try {
         const editTeamReq : editTeamRequest = req.body
-        const payload = await cogGetUser(editTeamReq.token)
-        const cogEamil = payload.UserAttributes![2].Value
+        const cogEamil = req.user
         const dbres = await db<draftTeam>('draftTeams')
             .where('id', '=', editTeamReq.teamId).returning('*')
             .update({ 
@@ -67,10 +65,9 @@ export const updateTeam: RequestHandler = async (req,res,next) => {
 export const getUserDraftTeams : RequestHandler = async (req, res, next) => {
     try {
         const draftTeamReq : tokenAuthRequest = req.body
-        const reqUser = await cogGetUser(draftTeamReq.token)
-        const cogEamil = reqUser.UserAttributes![2].Value
-        if(reqUser.Username){
-            const user = await db<User>('users').where('email',cogEamil)
+        const cogEamil = req.user
+        if(cogEamil){
+            const user = await db<User>('users').where('email',cogEamil.username)
             const payload = await db<draftTeam>('draftTeams')
             .where('user_id', '=', user[0].id)
             .returning('*')
@@ -89,10 +86,9 @@ export const getUserDraftTeams : RequestHandler = async (req, res, next) => {
 export const getUserTeams : RequestHandler = async (req, res, next) => {
     try {
         const draftTeamReq : tokenAuthRequest = req.body
-        const reqUser = await cogGetUser(draftTeamReq.token)
-        const cogEamil = reqUser.UserAttributes![2].Value
-        if(reqUser.Username){
-            const user = await db<User>('users').where('email',cogEamil)
+        const cogEamil = req.user
+        if(cogEamil){
+            const user = await db<User>('users').where('email',cogEamil.username)
             const payload = await db<Team>('teams')
             .where('user_id', '=', user[0].id)
             .returning('*')
@@ -112,13 +108,12 @@ export const joinTeamToLeague : RequestHandler = async (req, res, next) => {
     try {
 
         const joinTeamReq : addTeamToLeagueReq = req.body
-        const reqUser = await cogGetUser(joinTeamReq.token)
-        const cogEamil = reqUser.UserAttributes![2].Value
+        const cogEamil = req.user
         const teamLeague = await db<LeagueTeamRelation>('leagueTeamRelation')
         .where('team_id', '=', joinTeamReq.teamId).returning('*')
-        if(reqUser.Username){
+        if(cogEamil){
             if(!teamLeague[0]){
-                const user = await db<User>('users').where('email',cogEamil)
+                const user = await db<User>('users').where('email',cogEamil.username)
 
                 const team = await db<Team>('teams')
                 .where('id', '=', joinTeamReq.teamId)
