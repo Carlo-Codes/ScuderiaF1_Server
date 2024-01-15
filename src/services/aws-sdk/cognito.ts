@@ -66,7 +66,7 @@ export function cogAuthPassword(username:string, password:string){
 export function cogAuthToken(token:string){
     const command = new InitiateAuthCommand({
         ClientId:cognitoPoolData.ClientId,
-        AuthFlow:AuthFlowType.REFRESH_TOKEN,
+        AuthFlow:AuthFlowType.REFRESH_TOKEN_AUTH,
         AuthParameters:{
             REFRESH_TOKEN:token,
             //SECRET_HASH:env.SECRET_HASH!

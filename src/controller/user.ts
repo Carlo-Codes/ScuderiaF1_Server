@@ -122,11 +122,16 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
     }
 }
 
-export const refreshToken : RequestHandler = async (req,res,next) => {
+export const refreshToken : RequestHandler = async (req:Request,res,next) => {
     try {
-        const token:tokenAuthRequest = req.body
-        const result = await cogAuthToken(token.token)
-        res.send(result).status(200)
+        const authenticationResult = req.authenticationResult
+        if(authenticationResult){
+            res.send(authenticationResult).status(200)
+    
+        } else {
+            throw new Error('No token processed')
+        }
+
             
     } catch (err:unknown) {
         if(err instanceof Error){
