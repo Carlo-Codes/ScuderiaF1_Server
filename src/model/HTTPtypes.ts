@@ -16,7 +16,7 @@ export interface newTeamRequest extends Omit <Team,'id'| 'user_id'>{
     token:string
 }
 
-export interface newLeagueRequest extends Omit <League,'id'|'user_id'>{
+export interface newLeagueRequest extends Omit <League,'id'|'inviteCode'>{
     token:string
 }
 
@@ -63,8 +63,8 @@ export interface dataResponse {
     raceData:apiSportsRacesRes[],
     userTeams:Team[]
     userDraftTeams:draftTeam[]
-    userLeagues:LeagueAndTeams[]
-    participatingLeague:LeagueAndTeams[]
+    userLeagues:League[]
+    participatingLeague:League[]
 
 
 }

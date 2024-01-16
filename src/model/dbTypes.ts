@@ -47,7 +47,8 @@ export interface League{
     id:number,
     owner_user_id:number,
     league_name:string,
-    inviteCode:string
+    inviteCode:string,
+    simulation:boolean
 }
 
 export interface LeagueTeamRelation{
