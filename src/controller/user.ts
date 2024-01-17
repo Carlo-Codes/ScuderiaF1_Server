@@ -97,6 +97,23 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             const teams = await db<Team>('teams')
             .where('user_id', '=', user[0].id)
             .returning('*')
+            const myleauges = await db<League>('leagues')
+            .where('owner_user_id', '=' , user[0].id)
+            .returning('*') 
+
+            const teamIds:number[] = []
+
+            for(let i = 0; i < teams.length; i++){
+                teamIds.push(teams[i].id)
+            }
+            const participatingLeagueIDs = await db<LeagueTeamRelation>('leagueTeamRelation')
+            .whereIn('team_id',teamIds).returning('league_id')
+
+            const participatingLeagues = await db<League>('leagues')
+            .whereIn('id',participatingLeagueIDs)
+
+            
+
 
             const raceData = dbRaceData[0].response.response as apiSportsRacesRes[]
             const driverData = dbDriverData[0].response.response as apiSportsDriverRankRes[]
@@ -106,18 +123,18 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
                 driverData:driverData,
                 userDraftTeams:draftTeams,
                 userTeams:teams,
-                userLeagues:[],
-                participatingLeague:[],
+                userLeagues:myleauges,
+                participatingLeague:participatingLeagues,
             } 
             res.send(response)
 
         } else {
-            res.send('cannot authorise').status(401)
+            res.status(401).send('cannot authorise')
         }
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
-            res.send(err.message).status(400)
+            res.status(400).send(err.message)
         }
     }
 }

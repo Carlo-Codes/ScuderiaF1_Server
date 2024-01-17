@@ -54,7 +54,7 @@ export interface League{
 export interface LeagueTeamRelation{
     id:number,
     team_id:number,
-    league_inviteCode:string
+    league_id:string
 }
 
 export interface RacesApiStore{

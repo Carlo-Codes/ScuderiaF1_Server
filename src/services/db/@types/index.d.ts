@@ -32,7 +32,7 @@ declare module 'knex/types/tables' {
 
 declare module 'knex/types/tables' {
     interface Tables{
-        league:League;
+        leagues:League;
     }
 }
 

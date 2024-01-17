@@ -132,7 +132,7 @@ export const joinTeamToLeague : RequestHandler = async (req:Request, res, next) 
                     const dbres = await db<LeagueTeamRelation>('leagueTeamRelation')
                     .insert({
                         team_id:joinTeamReq.teamId,
-                        league_inviteCode:joinTeamReq.inviteCode,
+                        league_id:joinTeamReq.inviteCode,
                         
                     })
                     res.send(`Team Added to ${league[0].league_name}`)

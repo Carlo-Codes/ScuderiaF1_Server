@@ -16,7 +16,7 @@ export interface newTeamRequest extends Omit <Team,'id'| 'user_id'>{
     token:string
 }
 
-export interface newLeagueRequest extends Omit <League,'id'|'inviteCode'>{
+export interface newLeagueRequest extends Omit <League,'id'|'inviteCode'|'owner_user_id'>{
     token:string
 }
 
