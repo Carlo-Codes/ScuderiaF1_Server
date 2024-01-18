@@ -65,8 +65,6 @@ export interface dataResponse {
     userDraftTeams:draftTeam[]
     userLeagues:League[]
     participatingLeague:League[]
-
-
 }
 
 export interface addTeamToLeagueReq extends tokenAuthRequest{

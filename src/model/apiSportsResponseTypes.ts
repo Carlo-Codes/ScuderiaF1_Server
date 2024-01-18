@@ -57,6 +57,7 @@ export interface apiSportsCircuit{
 
 export interface apiSportsRacesRes{
     id:number,
+    date:string,
     competition: apiSportsCompetition,
     circuit: apiSportsCircuit,
     season: number,
