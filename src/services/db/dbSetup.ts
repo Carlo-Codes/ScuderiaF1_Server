@@ -28,10 +28,19 @@ async function createTeamsTable() {
     table.integer('user_id').notNullable()
     table.foreign('user_id').references('users.id')
     table.integer('competition_id')
+    
     table.integer('tier1_driver_id').defaultTo(null)
     table.integer('tier2_driver_id').defaultTo(null)
     table.integer('tier3_driver_id').defaultTo(null)
     table.integer('dnf_driver_id').defaultTo(null)
+    table.integer('fastest_lap_driver_id').defaultTo(null)
+
+    table.integer('tier1_points').defaultTo(null)
+    table.integer('tier2_points').defaultTo(null)
+    table.integer('tier3_points').defaultTo(null)
+    table.integer('dnf_points').defaultTo(null)
+    table.integer('fastest_lap_points').defaultTo(null)
+
     table.string('team_name').notNullable()
   })
 }

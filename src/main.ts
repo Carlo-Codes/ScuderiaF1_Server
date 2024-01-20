@@ -8,24 +8,24 @@ const port = env.PORT
 console.log("hello from the server")  
 
 app.listen(port,()=>{
-    console.log("server running on port :")
+    console.log("server running on port :") 
     console.log(port) 
 }) 
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
-
-/* createUserTable();
+/* 
+createUserTable();
 createDriverTable();
 createLeagesTable();
 createTeamsTable(); 
-createRacesApiStore();
+createRacesApiStore();      
 createDriverApiStore();
 createDraftTeamsTable(); 
 
 
 updateRacesApiStore();
 updateDriversApiStore(); 
-createTeamLeagueRelationTable();
+createTeamLeagueRelationTable(); 
 createTeamsResultsTable(); */
 
 
