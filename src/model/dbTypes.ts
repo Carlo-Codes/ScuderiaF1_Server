@@ -1,5 +1,5 @@
 import {apiSportsResponseBinding} from './apiSportsResponseTypes'
-
+import { IdriverTiers } from '../libraries/data/generateDriverrankings';
 export interface User{
     id:number;
     email:string;
@@ -24,6 +24,7 @@ export interface Team{
     tier1_driver_id:number,
     tier2_driver_id:number,
     tier3_driver_id:number,
+    fastest_lap_driver_id:number,
     dnf_driver_id:number,
     user_id:number
     league_id?:number
@@ -74,4 +75,9 @@ export interface RacesApiStore{
 export interface DriverApiStore{
     id:number,
     response:apiSportsResponseBinding
+}
+
+export interface DriverTierStore{
+    id:number,
+    tiers:IdriverTiers
 }

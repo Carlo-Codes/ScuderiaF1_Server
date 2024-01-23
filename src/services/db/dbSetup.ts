@@ -107,8 +107,16 @@ async function createDriverApiStore(){
   })
 }
 
+async function createDriverTierStore(){
+  await db.schema.withSchema('public').createTable('DriverTierStore', function (table: Knex.CreateTableBuilder){
+    table.bigIncrements('id').primary()
+    table.json('tiers') 
+  })
+}
+
+
  
-  export{createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
    
  
   

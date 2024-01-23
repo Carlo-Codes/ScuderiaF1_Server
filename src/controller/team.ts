@@ -137,13 +137,10 @@ export const joinTeamToLeague : RequestHandler = async (req:Request, res, next) 
                     })
                     res.send(`Team Added to ${league[0].league_name}`)
                 }
-
-    
             } else{
                 throw new Error("Relationship already exists")
             }
-            
-
+        
         } else { 
             res.send('cannot authorise').status(401)
         }
