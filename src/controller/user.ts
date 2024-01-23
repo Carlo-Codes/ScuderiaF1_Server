@@ -1,6 +1,6 @@
 import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation, DriverTierStore } from "../model/dbTypes";
 import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
@@ -91,6 +91,8 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             .where('id', '=','1').returning('*')
             const dbDriverData = await db<DriverApiStore>('DriverApiStore')
             .where('id', '=','1').returning('*')
+            const dbdriverTiers = await db<DriverTierStore>('DriverTierStore')
+            .where('id', '=','1').returning('*')
             const draftTeams = await db<draftTeam>('draftTeams')
             .where('user_id', '=', user[0].id)
             .returning('*')
@@ -114,7 +116,6 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
 
             
 
-
             const raceData = dbRaceData[0].response.response as apiSportsRacesRes[]
             const driverData = dbDriverData[0].response.response as apiSportsDriverRankRes[]
 
@@ -125,6 +126,7 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
                 userTeams:teams,
                 userLeagues:myleauges,
                 participatingLeague:participatingLeagues,
+                driverTiers:dbdriverTiers[0].tiers
             } 
             res.send(response)
 

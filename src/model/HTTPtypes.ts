@@ -1,5 +1,6 @@
 import { apiSportsDriverRankRes, apiSportsRacesRes } from "./apiSportsResponseTypes";
 import { Driver, League, Team, User, draftTeam } from "./dbTypes";
+import { IdriverTiers } from "../libraries/data/generateDriverrankings";
 
 
 export interface newUserRequest extends Omit <User,'id'>{
@@ -65,6 +66,7 @@ export interface dataResponse {
     userDraftTeams:draftTeam[]
     userLeagues:League[]
     participatingLeague:League[]
+    driverTiers:IdriverTiers
 }
 
 export interface addTeamToLeagueReq extends tokenAuthRequest{
