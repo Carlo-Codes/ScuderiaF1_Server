@@ -85,22 +85,17 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
     try {
         const cogEamil = req.user
         if(cogEamil){
-            const user = await db<User>('users').where('email',cogEamil.sub)
-            console.log(user)
             const dbRaceData = await db<RacesApiStore>('RacesApiStore')
             .where('id', '=','1').returning('*')
             const dbDriverData = await db<DriverApiStore>('DriverApiStore')
             .where('id', '=','1').returning('*')
             const dbdriverTiers = await db<DriverTierStore>('DriverTierStore')
             .where('id', '=','1').returning('*')
-            const draftTeams = await db<draftTeam>('draftTeams')
-            .where('user_id', '=', user[0].id)
-            .returning('*')
             const teams = await db<Team>('teams')
-            .where('user_id', '=', user[0].id)
+            .where('user_id', '=', cogEamil.username)
             .returning('*')
             const myleauges = await db<League>('leagues')
-            .where('owner_user_id', '=' , user[0].id)
+            .where('owner_user_id', '=' , cogEamil.username)
             .returning('*') 
 
             const teamIds:number[] = []
@@ -122,7 +117,6 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             const response:dataResponse ={
                 raceData:raceData,
                 driverData:driverData,
-                userDraftTeams:draftTeams,
                 userTeams:teams,
                 userLeagues:myleauges,
                 participatingLeague:participatingLeagues,

@@ -16,22 +16,19 @@ app.listen(port,()=>{
 
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
-/* 
-createUserTable();
-createDriverTable();
+
+/* createDriverTable();
 createLeagesTable();
 createTeamsTable(); 
 createRacesApiStore();      
 createDriverApiStore();
-createDraftTeamsTable(); 
-createDriverTierStore();
-//createDriverTierStore();
+createDriverTierStore(); 
+createTeamLeagueRelationTable(); 
+createTeamsResultsTable();
+*/
 
 
 updateRacesApiStore();
 updateDriversApiStore(); 
-createTeamLeagueRelationTable(); 
-createTeamsResultsTable(); */
-
-//generateDriverTiers();
+generateDriverTiers();
 

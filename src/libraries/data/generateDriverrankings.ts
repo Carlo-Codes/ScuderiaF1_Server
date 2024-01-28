@@ -1,20 +1,19 @@
 import {db} from '../../services/db/knexfile'
 import { DriverApiStore,  DriverTierStore} from '../../model/dbTypes'
 import { apiSportsDriverRankRes } from '../../model/apiSportsResponseTypes'
+import { IdriverTiers, IdriverNameToIdMap } from '../../model/dbTypes'
 
-export interface IdriverTiers {
+//purley for human interfacing
+interface IdriverTiersNames{
     tier1:{
-        drivers:string[]|number[]
-    },
-    tier2:{
-        drivers:string[]|number[]
-    }
-    tier3:{
-        drivers:string[]|number[]
+        drivers:string[]
+    },tier2:{
+        drivers:string[]
+    },tier3:{
+        drivers:string[]
     }
 }
-
-const driverTiers:IdriverTiers={
+const driverTiers:IdriverTiersNames={
     tier1:{
         drivers:[
             'Max Verstappen',
@@ -52,14 +51,22 @@ const driverTiers:IdriverTiers={
 }
 
 export async function generateDriverTiers(){
-    const driverIDTiers = {
+    interface driverNameIDTiers extends IdriverTiers{
         tier1:{
-            drivers:[] as number[]
-        },tier2:{
-            drivers:[] as number[]
-        },tier3:{
-            drivers:[] as number[]
+            drivers: IdriverNameToIdMap[]
         },
+        tier2:{
+            drivers: IdriverNameToIdMap[]
+        },
+        tier3:{
+            drivers: IdriverNameToIdMap[]
+        },
+    }
+    const driverNameIDTiers:driverNameIDTiers = {
+        tier1:{drivers:[]},
+        tier2:{drivers:[]},
+        tier3:{drivers:[]},
+
     }
     const payload = await db<DriverApiStore>('DriverApiStore')
             .where('id', '=','1').returning('*')
@@ -70,23 +77,29 @@ export async function generateDriverTiers(){
 
     for(tier in driverTiers){
         for (let i = 0; i < driverTiers[tier].drivers.length;i++){ 
-
+            
             const driverName = driverTiers[tier].drivers[i] as string
-            const drivreID = drivers.filter((driver)=>{
-                return driver.driver.name === driverName
+            const driverID = drivers.filter((driver)=>{
+                if(driver.driver.name === driverName){
+                    return driver
+                }
             })[0]
-            driverIDTiers[tier].drivers.push(drivreID.driver.id)  
+            const driverNameId:IdriverNameToIdMap = {
+                name:driverName,
+                id:driverID.driver.id,
+            }
+            driverNameIDTiers[tier].drivers!.push(driverNameId)  
         }
     }
 
     const currentStore = await db<DriverTierStore>('DriverTierStore').where('id', '1')
     if(currentStore[0]){
         const res = await db<DriverTierStore>('DriverTierStore').where('id', '1').update({
-            tiers:driverIDTiers
+            tiers:driverNameIDTiers
         })
     }else{
         const res = await db<DriverTierStore>('DriverTierStore').insert({
-            tiers:driverIDTiers
+            tiers:driverNameIDTiers
         })
     }
 }

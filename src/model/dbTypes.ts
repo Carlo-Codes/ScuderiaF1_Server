@@ -1,9 +1,27 @@
 import {apiSportsResponseBinding} from './apiSportsResponseTypes'
-import { IdriverTiers } from '../libraries/data/generateDriverrankings';
+import {JSX} from 'react'
+
 export interface User{
     id:number;
     email:string;
     cogSub:string; 
+}
+
+export interface IdriverNameToIdMap{
+    name:string,
+    id:number
+}
+
+export interface IdriverTiers {
+    tier1:{
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+    },
+    tier2:{
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+    }
+    tier3:{
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+    }
 }
 
 export interface Driver {
@@ -20,13 +38,12 @@ export interface Driver {
 }
 export interface Team{
     id:number,
-    team_name:string,
-    tier1_driver_id:number,
-    tier2_driver_id:number,
-    tier3_driver_id:number,
-    fastest_lap_driver_id:number,
-    dnf_driver_id:number,
-    user_id:number
+    tier1_driver_id?:number,
+    tier2_driver_id?:number,
+    tier3_driver_id?:number,
+    fastest_lap_driver_id?:number,
+    dnf_driver_id?:number,
+    user_id:string
     league_id?:number
     competion_id:number
     tier1_points?:number,
@@ -35,6 +52,7 @@ export interface Team{
     dnf_points?:number,
     fastest_lap_points?:number,
 }
+
 
 export interface TeamResults{
     id:number,

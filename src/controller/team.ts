@@ -10,23 +10,27 @@ export const newTeam : RequestHandler = async (req:Request, res, next) => {
     try {
         const teamRequest:newTeamRequest = req.body
         const cogEamil = req.user
-        const user = await db<User>('users').where('email',cogEamil?.sub)
-        const dbres = await db<Team>('teams').insert({
-            team_name:teamRequest.team_name,
-            user_id:user[0].id,
-            tier1_driver_id:teamRequest.tier1_driver_id,
-            tier2_driver_id:teamRequest.tier2_driver_id,
-            tier3_driver_id:teamRequest.tier3_driver_id,
-            dnf_driver_id:teamRequest.dnf_driver_id,
-        }).returning('*')
+        if(cogEamil){
+            const dbres = await db<Team>('teams').insert({
 
+                user_id:cogEamil?.sub,
+                tier1_driver_id:teamRequest.tier1_driver_id,
+                tier2_driver_id:teamRequest.tier2_driver_id,
+                tier3_driver_id:teamRequest.tier3_driver_id,
+                dnf_driver_id:teamRequest.dnf_driver_id,
+            }).returning('*')
 
-        const okMess = `${teamRequest.team_name} succesfully added to database`
-        const errMss = `${teamRequest.team_name} couldnt be added to database`
-        const teamResponse = checkdbRes(dbres[0], okMess, errMss)
+            
+            const okMess = `succesfully added to database`
+            const errMss = `couldnt be added to database`
+            const teamResponse = checkdbRes(dbres[0], okMess, errMss)
 
-        if(teamResponse.code) res.send(teamResponse).status(teamResponse.code)
+            if(teamResponse.code) res.send(teamResponse).status(teamResponse.code)
         
+    
+        }
+
+
 
     } catch (err:unknown) {
         if(err instanceof Error){
@@ -46,7 +50,6 @@ export const updateTeam: RequestHandler = async (req:Request,res,next) => {
         const dbres = await db<draftTeam>('draftTeams')
             .where('id', '=', editTeamReq.teamId).returning('*')
             .update({ 
-                team_name: editTeamReq.team_name,
                 tier1_driver_id:editTeamReq.tier1_driver_id,
                 tier2_driver_id:editTeamReq.tier2_driver_id,
                 tier3_driver_id:editTeamReq.tier3_driver_id,
@@ -54,7 +57,7 @@ export const updateTeam: RequestHandler = async (req:Request,res,next) => {
                 league_id:editTeamReq.league_id,
                 competion_id:editTeamReq.competion_id
             }).returning('*')
-        res.send(`${editTeamReq.team_name} was succesfully updated`).status(200)
+        res.send(`${editTeamReq.teamId} was succesfully updated`).status(200)
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
@@ -114,12 +117,12 @@ export const joinTeamToLeague : RequestHandler = async (req:Request, res, next) 
         .where('team_id', '=', joinTeamReq.teamId).returning('*')
         if(cogEamil){
             if(!teamLeague[0]){
-                const user = await db<User>('users').where('email',cogEamil.sub)
+
 
                 const team = await db<Team>('teams')
                 .where('id', '=', joinTeamReq.teamId)
                 
-                if (team[0].user_id != user[0].id){
+                if (team[0].user_id != cogEamil.username){
                     throw new Error('error, this is not your team')
                 }
 
