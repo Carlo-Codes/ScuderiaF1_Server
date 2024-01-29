@@ -45,7 +45,7 @@ export interface Team{
     dnf_driver_id?:number,
     user_id:string
     league_id?:number
-    competion_id:number
+    competition_id:number
     tier1_points?:number,
     tier2_points?:number,
     tier3_points?:number,

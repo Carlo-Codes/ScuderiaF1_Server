@@ -17,6 +17,7 @@ export const newTeam : RequestHandler = async (req:Request, res, next) => {
                 tier1_driver_id:teamRequest.tier1_driver_id,
                 tier2_driver_id:teamRequest.tier2_driver_id,
                 tier3_driver_id:teamRequest.tier3_driver_id,
+                competition_id:teamRequest.competition_id,
                 dnf_driver_id:teamRequest.dnf_driver_id,
             }).returning('*')
 
@@ -55,7 +56,7 @@ export const updateTeam: RequestHandler = async (req:Request,res,next) => {
                 tier3_driver_id:editTeamReq.tier3_driver_id,
                 dnf_driver_id:editTeamReq.dnf_driver_id, 
                 league_id:editTeamReq.league_id,
-                competion_id:editTeamReq.competion_id
+                competition_id:editTeamReq.competition_id
             }).returning('*')
         res.send(`${editTeamReq.teamId} was succesfully updated`).status(200)
     } catch (err:unknown) {
