@@ -18,6 +18,7 @@ export const newTeam : RequestHandler = async (req:Request, res, next) => {
                 tier2_driver_id:teamRequest.tier2_driver_id,
                 tier3_driver_id:teamRequest.tier3_driver_id,
                 competition_id:teamRequest.competition_id,
+                fastest_lap_driver_id:teamRequest.fastest_lap_driver_id,
                 dnf_driver_id:teamRequest.dnf_driver_id,
             }).returning('*')
 
@@ -54,7 +55,8 @@ export const updateTeam: RequestHandler = async (req:Request,res,next) => {
                 tier1_driver_id:editTeamReq.tier1_driver_id,
                 tier2_driver_id:editTeamReq.tier2_driver_id,
                 tier3_driver_id:editTeamReq.tier3_driver_id,
-                dnf_driver_id:editTeamReq.dnf_driver_id, 
+                dnf_driver_id:editTeamReq.dnf_driver_id,
+                fastest_lap_driver_id:editTeamReq.fastest_lap_driver_id, 
                 league_id:editTeamReq.league_id,
             }).returning('*')
         res.send(`${editTeamReq.competition_id} was succesfully updated`).status(200)
