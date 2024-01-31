@@ -46,19 +46,18 @@ export const newTeam : RequestHandler = async (req:Request, res, next) => {
 
 export const updateTeam: RequestHandler = async (req:Request,res,next) => {
     try {
-        const editTeamReq : editTeamRequest = req.body
+        const editTeamReq : newTeamRequest = req.body
         const cogEamil = req.user
-        const dbres = await db<draftTeam>('draftTeams')
-            .where('id', '=', editTeamReq.teamId).returning('*')
+        const dbres = await db<Team>('teams')
+            .where('competition_id', '=', editTeamReq.competition_id).returning('*')
             .update({ 
                 tier1_driver_id:editTeamReq.tier1_driver_id,
                 tier2_driver_id:editTeamReq.tier2_driver_id,
                 tier3_driver_id:editTeamReq.tier3_driver_id,
                 dnf_driver_id:editTeamReq.dnf_driver_id, 
                 league_id:editTeamReq.league_id,
-                competition_id:editTeamReq.competition_id
             }).returning('*')
-        res.send(`${editTeamReq.teamId} was succesfully updated`).status(200)
+        res.send(`${editTeamReq.competition_id} was succesfully updated`).status(200)
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
