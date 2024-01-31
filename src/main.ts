@@ -23,12 +23,12 @@ createTeamsTable();
 createRacesApiStore();      
 createDriverApiStore();
 createDriverTierStore(); 
-createTeamLeagueRelationTable(); 
-createTeamsResultsTable();
-*/
+createTeamLeagueRelationTable();  */
 
 
-updateRacesApiStore();
-updateDriversApiStore(); 
-generateDriverTiers();
+
+//createDriverTierStore();
+/* updateRacesApiStore();
+updateDriversApiStore();  */
+//generateDriverTiers();
 

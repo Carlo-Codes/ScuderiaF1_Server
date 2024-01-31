@@ -149,7 +149,7 @@ export const refreshToken : RequestHandler = async (req:Request,res,next) => {
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
-            res.send(err.message).status(400)
+            res.send(err.message).status(400) 
         }
     }
 }
