@@ -21,15 +21,7 @@ export const newTeam : RequestHandler = async (req:Request, res, next) => {
                 fastest_lap_driver_id:teamRequest.fastest_lap_driver_id,
                 dnf_driver_id:teamRequest.dnf_driver_id,
             }).returning('*')
-
-            
-            const okMess = `succesfully added to database`
-            const errMss = `couldnt be added to database`
-            const teamResponse = checkdbRes(dbres[0], okMess, errMss)
-
-            if(teamResponse.code) res.send(teamResponse).status(teamResponse.code)
-        
-    
+            res.send(dbres).status(200)
         }
 
 
@@ -50,16 +42,15 @@ export const updateTeam: RequestHandler = async (req:Request,res,next) => {
         const editTeamReq : newTeamRequest = req.body
         const cogEamil = req.user
         const dbres = await db<Team>('teams')
-            .where('competition_id', '=', editTeamReq.competition_id).returning('*')
+            .where('competition_id', '=', editTeamReq.competition_id).andWhere('user_id' , '=', cogEamil?.sub as string).returning('*')
             .update({ 
                 tier1_driver_id:editTeamReq.tier1_driver_id,
                 tier2_driver_id:editTeamReq.tier2_driver_id,
                 tier3_driver_id:editTeamReq.tier3_driver_id,
                 dnf_driver_id:editTeamReq.dnf_driver_id,
                 fastest_lap_driver_id:editTeamReq.fastest_lap_driver_id, 
-                league_id:editTeamReq.league_id,
             }).returning('*')
-        res.send(`${editTeamReq.competition_id} was succesfully updated`).status(200)
+        res.send(dbres).status(200)
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
