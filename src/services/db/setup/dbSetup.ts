@@ -112,7 +112,7 @@ async function createDriverTierStore(){
 }
 
 async function createRaceResults(){
-  await db.schema.withSchema('public').createTable('RaceResults', function (table: Knex.CreateTableBuilder){
+  await db.schema.withSchema('public').createTable('RaceResultsStore', function (table: Knex.CreateTableBuilder){
     table.bigInteger('id').primary()
     table.json('results')
   })

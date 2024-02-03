@@ -1,4 +1,5 @@
-import { apiSportsRacesRes, apiSportsResponseBinding } from "../../model/apiSportsResponseTypes";}
+import { apiSportsRacesRes, apiSportsResponseBinding } from "../../model/apiSportsResponseTypes";
+
 /* 
 TeamCalculator implements team{
 

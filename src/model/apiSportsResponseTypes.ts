@@ -22,7 +22,7 @@ export interface apiSportsDriver {
     season: number;
   }
   
-  export interface apiRaceResult {
+  export interface apiSportsRaceResult {
     race: {
       id: number;
     };
@@ -37,7 +37,7 @@ export interface apiSportsDriver {
     parameters: object;
     errors: string[];
     results: number;
-    response: apiSportsDriverRankRes[] | apiRaceResult[];
+    response: apiSportsDriverRankRes[] | apiSportsRaceResult[] | apiSportsRacesRes[];
   }
   
   export interface apiSportsResponse {

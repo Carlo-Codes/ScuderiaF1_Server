@@ -19,7 +19,7 @@ async function createTables(){
    await createRaceResults();
 }
 
-async function populateTables(){
+export async function populateTables(){
     await updateRacesApiStore();
     await updateDriversApiStore();
     await generateDriverTiers();

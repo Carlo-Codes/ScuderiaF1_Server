@@ -81,7 +81,7 @@ declare module 'knex/types/tables' {
 
 declare module 'knex/types/tables' {
     interface Tables{
-        RaceResults:RaceResults;
+        RaceResultsStore:RaceResultsStore;
     }
 }
 
