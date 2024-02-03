@@ -111,9 +111,16 @@ async function createDriverTierStore(){
   })
 }
 
+async function createRaceResults(){
+  await db.schema.withSchema('public').createTable('RaceResults', function (table: Knex.CreateTableBuilder){
+    table.bigInteger('id').primary()
+    table.json('results')
+  })
+}
+
 
  
-  export{createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createRaceResults, createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
    
  
   

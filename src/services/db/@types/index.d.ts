@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { LeagueTeamRelation, TeamResults, draftTeam, User, Driver, Team, League, RacesApiStore, DriverApiStore } from '../../../model/dbTypes';
+import { LeagueTeamRelation, TeamResults, draftTeam, User, Driver, Team, League, RacesApiStore, DriverApiStore, RaceResults } from '../../../model/dbTypes';
 import { CognitoAccessTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { Request } from 'express';
 
@@ -72,9 +72,18 @@ declare module 'knex/types/tables' {
     }
 }
 
+declare module 'knex/types/tables' {
+    interface Tables{
+        DriverTierStore:DriverTierStore;
+    }
+}
 
 
-
+declare module 'knex/types/tables' {
+    interface Tables{
+        RaceResults:RaceResults;
+    }
+}
 
 
 

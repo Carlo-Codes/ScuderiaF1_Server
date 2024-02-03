@@ -1,4 +1,4 @@
-import {createDriverTierStore, createTeamsResultsTable, createDraftTeamsTable, createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore, createDriverApiStore, createTeamLeagueRelationTable } from './dbSetup';
+import {createDriverTierStore, createTeamsResultsTable, createDraftTeamsTable, createUserTable, createTeamsTable, createDriverTable, createLeagesTable, createRacesApiStore, createDriverApiStore, createTeamLeagueRelationTable, createRaceResults } from './dbSetup';
 import {updateRacesApiStore, updateDriversApiStore} from '../../../libraries/data/dataPosting'
 import {generateDriverTiers} from '../../../libraries/data/generateDriverrankings'
 
@@ -16,6 +16,7 @@ async function createTables(){
    await createDriverApiStore();
    await createDriverTierStore(); 
    await createTeamLeagueRelationTable()
+   await createRaceResults();
 }
 
 async function populateTables(){

@@ -99,3 +99,7 @@ export interface DriverTierStore{
     id:number,
     tiers:IdriverTiers
 }
+
+export interface RaceResults{
+    
+}
