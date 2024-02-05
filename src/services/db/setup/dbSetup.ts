@@ -28,6 +28,7 @@ async function createTeamsTable() {
     table.string('user_id').notNullable()
     table.integer('competition_id').notNullable()
     table.unique(['user_id', 'competition_id'])
+    table.boolean('points_calculated').defaultTo(false)
     
     table.integer('tier1_driver_id').defaultTo(null)
     table.integer('tier2_driver_id').defaultTo(null)

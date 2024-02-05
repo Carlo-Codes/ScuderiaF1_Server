@@ -6,7 +6,7 @@ import { getFromApiSports } from "../data/dataFetch";
 
 
 export default class RaceResultsManager{
-    date:Date|undefined
+    date:number|undefined
     racesPlanned:apiSportsRacesRes[] = []
     newResults:RaceResultsStore[] = []
     raceResultsToGet:number[] = [] //ids
@@ -51,10 +51,10 @@ export default class RaceResultsManager{
         }
     }
 
-    postNewResults(){
+    async postNewResults(){
         try {
             for(let i = 0; i < this.newResults.length; i++){
-                const dbRes = db<RaceResultsStore>('RaceResultsStore').insert({
+                const dbRes = await db<RaceResultsStore>('RaceResultsStore').insert({
                     id:this.newResults[i].id,
                     results:this.newResults[i].results
                 })
@@ -66,16 +66,51 @@ export default class RaceResultsManager{
         }
     }
 
-    checkIfResultsExist(raceid:number){
+    async checkIfResultsExist(raceid:number){
         try {
-          
+          const dbRes = await db<RaceResultsStore>('RaceResultsStore')
+          .where('id', '=', raceid).returning('*')
+
+          if(dbRes){
+            return true
+          }else{
+            return false
+          }
         } catch (error) {
-            
+            if (error instanceof Error){
+                console.log(error)
+            }
         }
     }
 
-    checkIfResultsNeedGetting(){
+    async checkIfResultsNeedGetting(){
+        try {
+            if(this.date){
+                let resultsToGet:number[] = []
+                for(let i = 0; i < this.racesPlanned.length; i++){
+                    const alreadyExistsCheck = await this.checkIfResultsExist(this.racesPlanned[i].id)
+                    if(this.racesPlanned[i].status === "Completed" && !alreadyExistsCheck){
+                        resultsToGet.push(this.racesPlanned[i].id)
+                    }
+                }
+            } else{
+                throw new Error('no current date to comapre')
+            }
+        } catch (error) {
+            if (error instanceof Error){
+                console.log(error)
+            }
+        }
 
+
+    }
+
+    async update(){
+        this.date = Date.now();
+        await this.getRacesPlanned();
+        await this.checkIfResultsNeedGetting();
+        await this.getNewResults();
+        await this.postNewResults();
     }
 
 

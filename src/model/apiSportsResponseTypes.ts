@@ -74,5 +74,6 @@ export interface apiSportsDriver {
     type: string;
     laps: object;
     fastest_lap: object;
+    status: string;
   }
   
