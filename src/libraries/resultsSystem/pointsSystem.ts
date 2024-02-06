@@ -1,13 +1,16 @@
 import { error } from "console";
 import { apiSportsRaceResult } from "../../model/apiSportsResponseTypes";
-import { IdriverTiers, RaceResultsStore } from "../../model/dbTypes";
+import { FastestLapsResultsStore, IdriverTiers, RaceResultsStore } from "../../model/dbTypes";
 import { IdriverNameToIdMap } from "../../model/dbTypes";
 import { SelectionParameters, SelectionParamsMap } from "../../model/frontEnd";
 
 
 export class PointsSystemDistributor{
     RaceResults:RaceResultsStore|undefined;
+    fastestLapResults:FastestLapsResultsStore|undefined
+
     driverSelectionResult:apiSportsRaceResult|undefined
+
     positionOverall:number|undefined;
     positionTierRelative:number|undefined;
     driverTiers : IdriverTiers|undefined
@@ -16,7 +19,7 @@ export class PointsSystemDistributor{
     points:number = 0
 
 
-    init(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:IdriverNameToIdMap, driverTiers:IdriverTiers){
+    init(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:IdriverNameToIdMap, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
         try {
 
             const driversInTier = driverTiers[tier].drivers as IdriverNameToIdMap[]
@@ -92,17 +95,24 @@ export class PointsSystemDistributor{
                     const driversInTiers = this.driverTiers![tierName!].drivers! as IdriverNameToIdMap[]
                     if(driversInTiers.includes(this.driverSeleciton!)){
                         if(tierName === 'tier1'){
-                            this.points = 15
+                            this.points = 20
                         }else if(tierName === 'tier2'){
-                            this.points = 10
+                            this.points = 15
                         }else if (tierName === 'tier3'){
-                            this.points = 5
+                            this.points = 10
                         }
                     }
                 }
                 
             } else if (this.tier === 'fastestLap'){
-                
+                const fLapsResults = this.fastestLapResults!.results
+                for(let i = 0; i < fLapsResults.length; i++){
+                    if(fLapsResults[i].position === 1){
+                        if(fLapsResults[i].driver.id === this.driverSeleciton?.id){
+                            this.points = 15;
+                        }
+                    }
+                }
             }
 
         } catch (error) {

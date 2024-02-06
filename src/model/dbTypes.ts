@@ -1,4 +1,4 @@
-import {apiSportsResponseBinding, apiSportsRaceResult} from './apiSportsResponseTypes'
+import {apiSportsResponseBinding, apiSportsRaceResult, apiSportsFastestLapResults} from './apiSportsResponseTypes'
 import {JSX} from 'react'
 
 export interface User{
@@ -103,4 +103,9 @@ export interface DriverTierStore{
 export interface RaceResultsStore {
     id:number //raceid
     results:apiSportsRaceResult[]
+}
+
+export interface FastestLapsResultsStore{
+    id:number
+    results:apiSportsFastestLapResults[]
 }

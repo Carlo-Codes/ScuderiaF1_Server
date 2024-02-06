@@ -31,13 +31,25 @@ export interface apiSportsDriver {
     position: number;
     time: string;
   }
+
+  export interface apiSportsFastestLapResults {
+    race: {
+      id: number;
+    };
+    driver: apiSportsDriver;
+    team: apiSportsTeam;
+    position: number;
+    lap: number;
+    time: string;
+    avg_speed: string;
+  }
   
   export interface apiSportsResponseBinding {
     get: string;
     parameters: object;
     errors: string[];
     results: number;
-    response: apiSportsDriverRankRes[] | apiSportsRaceResult[] | apiSportsRacesRes[];
+    response: apiSportsDriverRankRes[] | apiSportsRaceResult[] | apiSportsRacesRes[] | apiSportsFastestLapResults[];
   }
   
   export interface apiSportsResponse {
