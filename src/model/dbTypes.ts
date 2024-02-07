@@ -1,4 +1,4 @@
-import {apiSportsResponseBinding, apiSportsRaceResult, apiSportsFastestLapResults} from './apiSportsResponseTypes'
+import {apiSportsResponseBinding ,apiSportsDriver , apiSportsRaceResult, apiSportsFastestLapResults} from './apiSportsResponseTypes'
 import {JSX} from 'react'
 
 export interface User{
@@ -14,13 +14,13 @@ export interface IdriverNameToIdMap{
 
 export interface IdriverTiers {
     tier1:{
-        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]|apiSportsDriver[]
     },
     tier2:{
-        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]|apiSportsDriver[]
     }
     tier3:{
-        drivers?:IdriverNameToIdMap[]|JSX.Element[]
+        drivers?:IdriverNameToIdMap[]|JSX.Element[]|apiSportsDriver[]
     }
 }
 

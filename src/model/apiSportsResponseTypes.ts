@@ -49,7 +49,7 @@ export interface apiSportsDriver {
     parameters: object;
     errors: string[];
     results: number;
-    response: apiSportsDriverRankRes[] | apiSportsRaceResult[] | apiSportsRacesRes[] | apiSportsFastestLapResults[];
+    response: apiSportsDriverRankRes[] | apiSportsRaceResult[] | apiSportsRacesRes[] | apiSportsFastestLapResults[] | apiSportsDriverRankRes[];
   }
   
   export interface apiSportsResponse {

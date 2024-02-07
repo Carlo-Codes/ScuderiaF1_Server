@@ -1,11 +1,11 @@
 import { error } from "console";
-import { apiSportsRaceResult } from "../../model/apiSportsResponseTypes";
-import { FastestLapsResultsStore, IdriverTiers, RaceResultsStore } from "../../model/dbTypes";
+import { apiSportsRaceResult, apiSportsDriver } from "../../model/apiSportsResponseTypes";
+import { Driver, FastestLapsResultsStore, IdriverTiers, RaceResultsStore } from "../../model/dbTypes";
 import { IdriverNameToIdMap } from "../../model/dbTypes";
 import { SelectionParameters, SelectionParamsMap } from "../../model/frontEnd";
 
 
-export class PointsSystemDistributor{
+export class TierPointsDistributor{
     RaceResults:RaceResultsStore|undefined;
     fastestLapResults:FastestLapsResultsStore|undefined
 
@@ -15,20 +15,21 @@ export class PointsSystemDistributor{
     positionTierRelative:number|undefined;
     driverTiers : IdriverTiers|undefined
     tier : keyof SelectionParameters|undefined;
-    driverSeleciton : IdriverNameToIdMap|undefined
+    driverSeleciton : apiSportsDriver|undefined
     points:number = 0
 
 
-    init(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:IdriverNameToIdMap, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
+    init(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
         try {
 
-            const driversInTier = driverTiers[tier].drivers as IdriverNameToIdMap[]
+            const driversInTier = driverTiers[tier].drivers as apiSportsDriver[]
             let driverTierTest = driversInTier.find((d) => {d.id === driver.id})
             if(driverTierTest){
                 this.RaceResults = raceResults
                 this.tier = tier
                 this.driverTiers = driverTiers
-                this.driverSeleciton = driver as IdriverNameToIdMap
+                this.driverSeleciton = driver as apiSportsDriver
+                this.fastestLapResults = fastestLapResults
             } else {
                 throw new Error('Driver Does not belong in tier')
             }
@@ -54,7 +55,7 @@ export class PointsSystemDistributor{
             //relativePosition to tier
             let driversInTiersResults:apiSportsRaceResult[] = []
             const tierName = SelectionParamsMap[this.tier!].IdriverTierName
-            const driversInTiers = this.driverTiers![tierName!].drivers! as IdriverNameToIdMap[]
+            const driversInTiers = this.driverTiers![tierName!].drivers! as apiSportsDriver[]
             for(let i = 0; i < driversInTiers.length; i++){
                 const driverPositionResult = this.RaceResults?.results.find((result) => {result.driver.id === driversInTiers[i].id})
                 if(driverPositionResult){
@@ -92,7 +93,7 @@ export class PointsSystemDistributor{
                 const possibleDriverTiers  = Object.keys(this.driverTiers!);
                 for(let i = 0; i < possibleDriverTiers.length; i++){
                     const tierName = possibleDriverTiers[i] as keyof IdriverTiers
-                    const driversInTiers = this.driverTiers![tierName!].drivers! as IdriverNameToIdMap[]
+                    const driversInTiers = this.driverTiers![tierName!].drivers! as apiSportsDriver[]
                     if(driversInTiers.includes(this.driverSeleciton!)){
                         if(tierName === 'tier1'){
                             this.points = 20
