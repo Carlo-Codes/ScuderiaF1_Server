@@ -1,37 +1,85 @@
-import { SelectionParamsMap, SelectionParameters } from "../../model/frontEnd";
+import { SelectionParamsMap, SelectionParameters, TeamFrontEnd } from "../../model/frontEnd";
 import { TierPointsDistributor } from "./TierPointsDistributor";
 import {apiSportsDriverRankRes} from './../../model/apiSportsResponseTypes'
 import {IdriverTiers, RaceResultsStore, Team, DriverApiStore, IdriverNameToIdMap, FastestLapsResultsStore} from './../../model/dbTypes'
+import { db } from "../../services/db/knexfile";
 
 export class TeamPointsDistributor{
-    Params = Object.keys(SelectionParamsMap)
-    tierSelections:TierPointsDistributor[] = []
-    team:Team|undefined
-    driverTiers:IdriverTiers|undefined
-    drivers:DriverApiStore|undefined
-    fastestLapResults:FastestLapsResultsStore|undefined
+    private Params = Object.keys(SelectionParamsMap)
+    private tierSelections:TierPointsDistributor[] = []
+    private readonly team:Team;
+    private driverTiers:IdriverTiers
+    private drivers:DriverApiStore
+    private fastestLapResults:FastestLapsResultsStore
+    private teamWithPoints : Team;
 
 
-    init(team:Team, driverTiers:IdriverTiers,  raceResults:RaceResultsStore, drivers:DriverApiStore, fastestLapResults:FastestLapsResultsStore){
+    constructor(team:Team, driverTiers:IdriverTiers,  raceResults:RaceResultsStore, drivers:DriverApiStore, fastestLapResults:FastestLapsResultsStore){
         this.team = team
+        this.teamWithPoints = team
         this.driverTiers = driverTiers;
+        this.fastestLapResults = fastestLapResults;
+        this.drivers = drivers;
         this.fastestLapResults = fastestLapResults
-        for(let i = 0; i < this.Params.length; i++){
-            const param = this.Params[i] as keyof SelectionParameters
-            const parameterSelection = this.team[SelectionParamsMap[param].dbSelection]
-            const driverTierName = SelectionParamsMap[param].IdriverTierName
-            const driverRankings = drivers.response.response as apiSportsDriverRankRes[]
-            const driverObject = driverRankings.filter((driver)=>{
-                if (driver.driver.id === parameterSelection){
-                    return driver
-                }
-            })[0].driver;
+
+        try {
+            for(let i = 0; i < this.Params.length; i++){
+                const param = this.Params[i] as keyof SelectionParameters
+                const parameterSelection = this.team[SelectionParamsMap[param].dbSelection]
+                const driverTierName = SelectionParamsMap[param].IdriverTierName
+                const driverRankings = this.drivers.response.response as apiSportsDriverRankRes[]
+                const driverObject = driverRankings.filter((driver)=>{
+                    if (driver.driver.id === parameterSelection){
+                        return driver
+                    }
+                })[0].driver;
+                
+                const tierPoints = new TierPointsDistributor(driverTierName!,raceResults,driverObject,this.driverTiers,this.fastestLapResults)
+                this.tierSelections.push(tierPoints)
+            }
+    
+        } catch (error) {
             
-            const tierPoints = new TierPointsDistributor()
-            
-            tierPoints.init(driverTierName!,raceResults,driverObject,this.driverTiers,fastestLapResults)
         }
     }
 
-    //post() post team or return team 
+    calculatePoints(){
+        for(let i = 0; i < this.tierSelections.length; i++){
+            this.tierSelections[i].calculatePoints()
+        }
+    }
+
+    assignPointsToTeam(){
+        try {
+            for(let i = 0; i < this.tierSelections.length; i++){
+                if(this.tierSelections[i]){
+                    const tierName = this.tierSelections[i].Tier!
+                    const points = this.tierSelections[i].Points
+                    const teamParam = SelectionParamsMap[tierName].dbPoints as keyof TeamFrontEnd
+                    this.teamWithPoints[teamParam] = points
+                }
+        }
+
+        } catch (error) {
+            
+        }
+    }
+    
+    async updateTeam(){
+        try {
+            const dbres = await db<Team>('teams')
+            .where('competition_id', '=', this.team.competition_id)
+            .update({ 
+                tier1_points:this.teamWithPoints.tier1_points,
+                tier2_points:this.teamWithPoints.tier2_points,
+                tier3_points:this.teamWithPoints.tier3_points,
+                fastest_lap_points:this.teamWithPoints.fastest_lap_points,
+                dnf_points:this.teamWithPoints.dnf_points
+                
+            }).returning('*')
+
+        } catch (error) {
+            
+        }
+    }
 }

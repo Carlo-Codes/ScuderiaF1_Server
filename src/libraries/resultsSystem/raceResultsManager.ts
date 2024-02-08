@@ -6,14 +6,18 @@ import { getFromApiSports } from "../data/dataFetch";
 
 
 export default class RaceResultsManager{
-    date:number|undefined
-    racesPlanned:apiSportsRacesRes[] = []
-    newResults:RaceResultsStore[] = []
-    raceResultsToGet:number[] = [] //ids
+    private date:number|undefined
+    private racesPlanned:apiSportsRacesRes[] = []
+    private newResults:RaceResultsStore[] = []
+    private raceResultsToGet:number[] = [] //ids
 
-    getResultsUrl = 'https://v1.formula-1.api-sports.io/rankings/startinggrid?race='
+    private readonly getResultsUrl = 'https://v1.formula-1.api-sports.io/rankings/startinggrid?race='
 
-    async getRacesPlanned(){
+    async init(){
+        await this.update()
+    }
+
+    private async getRacesPlanned(){
         try {
             const payload = await db<RacesApiStore>('RacesApiStore')
             .where('id', '=','1').returning('*')
@@ -30,7 +34,7 @@ export default class RaceResultsManager{
         }
     }
 
-    async getNewResults(){
+    private async getNewResults(){
         try {
             if(this.raceResultsToGet?.length > 0){
                 for(let i = 0; i < this.raceResultsToGet?.length; i++){
@@ -51,7 +55,7 @@ export default class RaceResultsManager{
         }
     }
 
-    async postNewResults(){
+    private async postNewResults(){
         try {
             for(let i = 0; i < this.newResults.length; i++){
                 const dbRes = await db<RaceResultsStore>('RaceResultsStore').insert({
@@ -66,7 +70,7 @@ export default class RaceResultsManager{
         }
     }
 
-    async checkIfResultsExist(raceid:number){
+    private async checkIfResultsExist(raceid:number){
         try {
           const dbRes = await db<RaceResultsStore>('RaceResultsStore')
           .where('id', '=', raceid).returning('*')
@@ -83,7 +87,7 @@ export default class RaceResultsManager{
         }
     }
 
-    async checkIfResultsNeedGetting(){
+    private async checkIfResultsNeedGetting(){
         try {
             if(this.date){
                 let resultsToGet:number[] = []

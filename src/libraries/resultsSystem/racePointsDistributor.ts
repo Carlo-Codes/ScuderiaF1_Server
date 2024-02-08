@@ -2,6 +2,6 @@ import RaceResultsManager from './raceResultsManager'
 import { TeamPointsDistributor } from './teamPointsDistributor';
 
 export class RacePointsDistributor{
-    resultsManager = new RaceResultsManager()
-    teams:TeamPointsDistributor[] = [];
+    private resultsManager = new RaceResultsManager()
+    private teams:TeamPointsDistributor[] = [];
 }

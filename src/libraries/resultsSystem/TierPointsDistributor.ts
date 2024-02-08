@@ -6,20 +6,20 @@ import { SelectionParameters, SelectionParamsMap } from "../../model/frontEnd";
 
 
 export class TierPointsDistributor{
-    RaceResults:RaceResultsStore|undefined;
-    fastestLapResults:FastestLapsResultsStore|undefined
+    private RaceResults:RaceResultsStore|undefined;
+    private fastestLapResults:FastestLapsResultsStore|undefined
 
-    driverSelectionResult:apiSportsRaceResult|undefined
+    private driverSelectionResult:apiSportsRaceResult|undefined
 
-    positionOverall:number|undefined;
-    positionTierRelative:number|undefined;
-    driverTiers : IdriverTiers|undefined
-    tier : keyof SelectionParameters|undefined;
-    driverSeleciton : apiSportsDriver|undefined
-    points:number = 0
+    private positionOverall:number|undefined;
+    private positionTierRelative:number|undefined;
+    private readonly driverTiers : IdriverTiers|undefined
+    private readonly tier : keyof SelectionParameters|undefined;
+    private readonly driverSeleciton : apiSportsDriver|undefined
+    private points:number = 0
 
 
-    init(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
+    constructor(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
         try {
 
             const driversInTier = driverTiers[tier].drivers as apiSportsDriver[]
@@ -121,6 +121,17 @@ export class TierPointsDistributor{
                 console.log(error)
             }  
         }
+    }
+
+    get Tier():keyof SelectionParameters|undefined{
+        if(this.tier){
+            return this.tier
+        } else {return undefined}
+        
+    }
+
+    get Points():number{
+        return this.points
     }
 
     

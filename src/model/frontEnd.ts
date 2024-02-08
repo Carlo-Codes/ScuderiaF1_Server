@@ -8,8 +8,8 @@ export interface TeamFrontEnd extends Omit<Team,'id'|'user_id'>{
 export interface selectionParam {
     name:keyof SelectionParameters,
     IdriverTierName: keyof IdriverTiers | null
-    dbSelection:keyof TeamFrontEnd,
-    dbPoints:keyof TeamFrontEnd,
+    dbSelection:keyof TeamFrontEnd | keyof Team,
+    dbPoints:keyof TeamFrontEnd | keyof Team,
     clientName:string
 }
 
