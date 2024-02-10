@@ -6,7 +6,7 @@ import * as fs from 'node:fs/promises';
 const apiSportsConfig = {
     method:'get',
     headers: {
-        "x-rapidapi-key":"14dbc453cdfea255add81128ba902975",
+        "x-rapidapi-key":"76754ff5cf3e47c29929836ff96feaf5",
         "x-rapidapi-host":"v1.formula-1.api-sports.io"
     }
 }

@@ -102,10 +102,10 @@ export interface DriverTierStore{
 
 export interface RaceResultsStore {
     id:number //raceid
-    results:apiSportsRaceResult[]
+    results:{results:apiSportsRaceResult[]}
 }
 
 export interface FastestLapsResultsStore{
     id:number
-    results:apiSportsFastestLapResults[]
+    results:{results : apiSportsFastestLapResults[]}
 }
