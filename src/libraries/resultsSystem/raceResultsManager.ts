@@ -11,13 +11,14 @@ export default class RaceResultsManager{
     private racesPlanned:apiSportsRacesRes[] = []
     private newResults:RaceResultsStore[] = []
     private raceResultsToGet:number[] = [] //ids
+    private allResults:RaceResultsStore[] = []
 
-    private readonly getResultsUrl = 'https://v1.formula-1.api-sports.io/rankings/startinggrid?race='
+    private readonly getResultsUrl = 'https://v1.formula-1.api-sports.io/rankings/races?race='
 
     async init(){
         await this.update()
     }
-
+ 
     private async getRacesPlanned(){
         try {
             const payload = await db<RacesApiStore>('RacesApiStore')
@@ -35,7 +36,7 @@ export default class RaceResultsManager{
         }
     }
     
-    apiSleep(ms:number){
+    private apiSleep(ms:number){
         return new Promise ((resolve) => setTimeout(resolve, ms))
     }
 
@@ -45,7 +46,7 @@ export default class RaceResultsManager{
                 for(let i = 0; i < this.raceResultsToGet?.length; i++){
                     const url = this.getResultsUrl + this.raceResultsToGet[i]
 
-                    await this.apiSleep(10000)
+                    await this.apiSleep(500)
                     const res = await getFromApiSports(url) as apiSportsResponseBinding
                     console.log(res)
                     const results = res.response as apiSportsRaceResult[]
@@ -55,7 +56,7 @@ export default class RaceResultsManager{
                         results:{results:results}
                     })
                 }
-            } else throw new Error('No race Results to get')
+            }
     
         } catch (error) {
             if (error instanceof Error){
@@ -76,6 +77,22 @@ export default class RaceResultsManager{
                     results:result
                 })
             }
+        } catch (error) {
+            if (error instanceof Error){
+                console.log(error)
+            }
+        }
+    }
+
+    private async getallResults(){
+        try {
+            const payload = await db<RaceResultsStore>('RaceResultsStore').returning('*')
+            if(!payload[0]){
+                throw new Error('getting all race Results failed')
+            }
+            this.allResults = payload
+            
+
         } catch (error) {
             if (error instanceof Error){
                 console.log(error)
@@ -128,7 +145,15 @@ export default class RaceResultsManager{
         await this.checkIfResultsNeedGetting();
         await this.getNewResults();
         await this.postNewResults();
+        await this.getallResults();
     }
 
+    get NewResults():RaceResultsStore[]{
+        return this.NewResults
+    }
+
+    get AllResults():RaceResultsStore[]{
+        return this.allResults
+    }
 
 }

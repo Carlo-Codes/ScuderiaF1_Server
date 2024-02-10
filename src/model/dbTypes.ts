@@ -51,6 +51,7 @@ export interface Team{
     tier3_points?:number,
     dnf_points?:number,
     fastest_lap_points?:number,
+    points_calculated:boolean
 }
 
 

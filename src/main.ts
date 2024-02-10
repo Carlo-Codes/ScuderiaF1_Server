@@ -13,7 +13,8 @@ app.listen(port,()=>{
     console.log(port) 
 }) 
 
-
+const RR = new RaceResultsManager();
+RR.init();
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 //createDatabase();   
 //populateTables();

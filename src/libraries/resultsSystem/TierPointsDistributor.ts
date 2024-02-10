@@ -45,7 +45,7 @@ export class TierPointsDistributor{
         try {
             //dont need to make this calculation if its a dnf or fastest lap
             //overallPosition
-            const SelectionResult = this.RaceResults?.results.find((result) => {result.driver.id === this.driverSeleciton?.id}) as apiSportsRaceResult
+            const SelectionResult = this.RaceResults?.results.results.find((result) => {result.driver.id === this.driverSeleciton?.id}) as apiSportsRaceResult
             if(!SelectionResult){
                 throw new Error('no overall position result')
             }
@@ -57,7 +57,7 @@ export class TierPointsDistributor{
             const tierName = SelectionParamsMap[this.tier!].IdriverTierName
             const driversInTiers = this.driverTiers![tierName!].drivers! as apiSportsDriver[]
             for(let i = 0; i < driversInTiers.length; i++){
-                const driverPositionResult = this.RaceResults?.results.find((result) => {result.driver.id === driversInTiers[i].id})
+                const driverPositionResult = this.RaceResults?.results.results.find((result) => {result.driver.id === driversInTiers[i].id})
                 if(driverPositionResult){
                     driversInTiersResults.push(driverPositionResult)
                 }
@@ -106,7 +106,7 @@ export class TierPointsDistributor{
                 }
                 
             } else if (this.tier === 'fastestLap'){
-                const fLapsResults = this.fastestLapResults!.results
+                const fLapsResults = this.fastestLapResults!.results.results
                 for(let i = 0; i < fLapsResults.length; i++){
                     if(fLapsResults[i].position === 1){
                         if(fLapsResults[i].driver.id === this.driverSeleciton?.id){

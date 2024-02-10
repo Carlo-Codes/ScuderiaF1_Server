@@ -55,7 +55,7 @@ export class TeamPointsDistributor{
                 if(this.tierSelections[i]){
                     const tierName = this.tierSelections[i].Tier!
                     const points = this.tierSelections[i].Points
-                    const teamParam = SelectionParamsMap[tierName].dbPoints as keyof TeamFrontEnd
+                    const teamParam = SelectionParamsMap[tierName].dbPoints as keyof Team
                     this.teamWithPoints[teamParam] = points
                 }
         }
