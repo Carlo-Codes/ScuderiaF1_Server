@@ -6,7 +6,7 @@ import { getFromApiSports } from "../data/dataFetch";
 
 
 
-export default class RaceResultsManager{
+export default class RaceDataManager{
     private date:number|undefined
     private racesPlanned:apiSportsRacesRes[] = []
     private newResults:RaceResultsStore[] = []
@@ -97,7 +97,7 @@ export default class RaceResultsManager{
             if (error instanceof Error){
                 console.log(error)
             }
-        }
+        } 
     }
 
     private async checkIfResultsExist(raceid:number){
@@ -154,6 +154,19 @@ export default class RaceResultsManager{
 
     get AllResults():RaceResultsStore[]{
         return this.allResults
+    }
+
+    get PlannedRaces():apiSportsRacesRes[]{
+        return this.PlannedRaces
+    }
+
+    getResultfromId(id:number):RaceResultsStore|undefined{
+        const filteredResults = this.allResults.filter((result) => {
+            if(result.id === id){
+                return result
+            }
+        })
+        return filteredResults[0]
     }
 
 }

@@ -1,13 +1,13 @@
 import {downloadAsset, getFromApiSports} from './dataFetch'
 import {db} from '../../services/db/knexfile'
 import { DriverApiStore, RacesApiStore } from '../../model/dbTypes';
-import {apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../../model/apiSportsResponseTypes'
+import {apiSportsFastestLapResults, apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../../model/apiSportsResponseTypes'
 import path from 'path';
 import * as fs from 'node:fs/promises';
 const seasonYear = 2023
 const racesUrl = `https://v1.formula-1.api-sports.io/races?season=${seasonYear}`
 const driverUrl = `https://v1.formula-1.api-sports.io/rankings/drivers?season=${seasonYear}`
-
+const fastestLapURL = `https://v1.formula-1.api-sports.io/rankings/fastestlaps?race=`
 const baseDir = path.join(__dirname, '..','..', 'client', 'assets')
 const driverImgDir = path.join(baseDir, 'driverImages')
 const circuitImgDir = path.join(baseDir, 'circuitImages')
@@ -93,6 +93,13 @@ export async function updateCircuitPictures(raceRes:apiSportsRacesRes[]){
         }
     }
 } 
+
+export async function getFastestLap(id:number){
+    const url = fastestLapURL + id
+    const res = await getFromApiSports(url) as apiSportsResponseBinding
+    const fastestLapResults = res.response as apiSportsFastestLapResults[]
+    return fastestLapResults
+}
 
 
 

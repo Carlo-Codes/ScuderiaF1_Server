@@ -11,7 +11,7 @@ export class TeamPointsDistributor{
     private driverTiers:IdriverTiers
     private drivers:DriverApiStore
     private fastestLapResults:FastestLapsResultsStore
-    private teamWithPoints : Team;
+    private teamWithPoints : TeamFrontEnd;
 
 
     constructor(team:Team, driverTiers:IdriverTiers,  raceResults:RaceResultsStore, drivers:DriverApiStore, fastestLapResults:FastestLapsResultsStore){
@@ -55,7 +55,7 @@ export class TeamPointsDistributor{
                 if(this.tierSelections[i]){
                     const tierName = this.tierSelections[i].Tier!
                     const points = this.tierSelections[i].Points
-                    const teamParam = SelectionParamsMap[tierName].dbPoints as keyof Team
+                    const teamParam = SelectionParamsMap[tierName].dbPoints as keyof TeamFrontEnd
                     this.teamWithPoints[teamParam] = points
                 }
         }
@@ -65,7 +65,7 @@ export class TeamPointsDistributor{
         }
     }
     
-    async updateTeam(){
+    async updateTeamWithPoints(){
         try {
             const dbres = await db<Team>('teams')
             .where('competition_id', '=', this.team.competition_id)
@@ -74,7 +74,8 @@ export class TeamPointsDistributor{
                 tier2_points:this.teamWithPoints.tier2_points,
                 tier3_points:this.teamWithPoints.tier3_points,
                 fastest_lap_points:this.teamWithPoints.fastest_lap_points,
-                dnf_points:this.teamWithPoints.dnf_points
+                dnf_points:this.teamWithPoints.dnf_points,
+                points_calculated:true,
                 
             }).returning('*')
 
@@ -82,4 +83,6 @@ export class TeamPointsDistributor{
             
         }
     }
+
+
 }

@@ -119,9 +119,17 @@ async function createRaceResults(){
   })
 }
 
+async function createFastestLapsResults(){
+  await db.schema.withSchema('public').createTable('FastestLapResultsStore', function (table: Knex.CreateTableBuilder){
+    table.bigInteger('id').primary()
+    table.json('results')
+  })
+
+}
+
 
  
-  export{createRaceResults, createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createFastestLapsResults, createRaceResults, createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
    
  
   

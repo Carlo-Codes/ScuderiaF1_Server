@@ -1,8 +1,7 @@
 import { IdriverTiers, Team } from "./dbTypes"
 
-export interface TeamFrontEnd extends Omit<Team,'id'|'user_id'>{
+export interface TeamFrontEnd extends Omit<Team,'id'|'user_id'|'points_calculated'|'editable'>{
 }
-
 
 
 export interface selectionParam {
