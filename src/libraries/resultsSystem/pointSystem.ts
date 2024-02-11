@@ -37,7 +37,7 @@ export class PointSystem{
             const dbRes = await db<Team>('teams').where('points_calculated','=','false').returning('*')
             this.teamsToCheck = dbRes
         } catch (error) {
-            
+            console.log(error)
         }
     }
 
@@ -45,9 +45,9 @@ export class PointSystem{
         try {
             for (let i = 0; i < this.teamsToCheck.length; i++){
                 const teamRaceId = this.teamsToCheck[i].competition_id
-                const plannedRace = this.data.PlannedRaces.filter((race)=>{
+                const plannedRace = this.data.PlannedRaces.filter((race)=>{ //call stack limit problem
                     if(race.id === teamRaceId){
-                        return race
+                        return race 
                     }
                 })[0]
     
@@ -61,39 +61,44 @@ export class PointSystem{
     
             }
         } catch (error) {
-            
+            console.log(error)
         }
 
     }
 
     private async checkTeamsForCalculatingPoints(){
-        const completedRaces = this.data.PlannedRaces.filter((race)=>{
-            if(race.status === "Completed"){
-                return race
-            }
-        })
-
-        for (let i = 0; i < completedRaces.length; i++){
-            const raceTeams = this.teamsToCheck.filter((team) =>{
-                if(team.id === completedRaces[i].id)
-                return team
+        try {
+            const completedRaces = this.data.PlannedRaces.filter((race)=>{
+                if(race.status === "Completed"){
+                    return race
+                }
             })
-            for(let i = 0; i < raceTeams.length; i++){
-                const result = this.data.getResultfromId(completedRaces[i].id)
-                const fastestLapResult = this.data.getFastestLapfromId(completedRaces[i].id).results
-                const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers!,result!,this.drivers!,fastestLapResult)
-                this.teamPoints.push(pointTeam)
+    
+            for (let i = 0; i < completedRaces.length; i++){
+                const raceTeams = this.teamsToCheck.filter((team) =>{
+                    if(team.id === completedRaces[i].id)
+                    return team
+                })
+                for(let i = 0; i < raceTeams.length; i++){
+                    const result = this.data.getResultfromId(completedRaces[i].id)
+                    const fastestLapResult = this.data.getFastestLapfromId(completedRaces[i].id).results
+                    const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers!,result!,this.drivers!,fastestLapResult)
+                    this.teamPoints.push(pointTeam)
+                }
             }
+    
+        } catch (error) {
+            console.log(error)
         }
 
     }
 
-    private calculateAllPoints(){
-
-    }
-
-    private postTeamsWithPoints(){
-
+    private async calculateAllPointsAndPost(){
+        for(let i = 0; i < this.teamPoints.length; i++){
+            this.teamPoints[i].calculatePoints()
+            this.teamPoints[i].assignPointsToTeam();
+            await this.teamPoints[i].updateTeamWithPoints()
+        }
     }
 
    async update(){
