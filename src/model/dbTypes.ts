@@ -109,5 +109,5 @@ export interface RaceResultsStore {
 
 export interface FastestLapsResultsStore{
     id:number
-    results:{results : apiSportsFastestLapResults[]}
+    results:apiSportsFastestLapResults
 }

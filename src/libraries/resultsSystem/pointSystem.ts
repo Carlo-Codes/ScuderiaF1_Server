@@ -1,6 +1,6 @@
 import { DriverApiStore, DriverTierStore, IdriverTiers, Team } from '../../model/dbTypes';
 import { db } from '../../services/db/knexfile';
-import { updateRacesApiStore } from '../data/dataPosting';
+import { getFastestLap, updateRacesApiStore } from '../data/dataPosting';
 import RaceDataManager from './raceDataManager'
 import { TeamPointsDistributor } from './teamPointsDistributor';
 import {apiSportsDriverRankRes} from '../../model/apiSportsResponseTypes'
@@ -85,7 +85,8 @@ export class PointSystem{
             })
             for(let i = 0; i < raceTeams.length; i++){
                 const result = this.resultsManager.getResultfromId(completedRaces[i].id)
-                const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers,result,this.drivers,)
+                const fastestLapResult = await getFastestLap(completedRaces[i].id)
+                const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers!,result!,this.drivers!,fastestLapResult)
             }
         }
 

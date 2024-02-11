@@ -85,6 +85,11 @@ declare module 'knex/types/tables' {
     }
 }
 
+declare module 'knex/types/tables' {
+    interface Tables{
+        FastestLapsResultsStore:FastestLapsResultsStore;
+    }
+}
 
 
 

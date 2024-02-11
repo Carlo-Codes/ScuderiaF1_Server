@@ -1,5 +1,5 @@
 import { error } from "console";
-import { apiSportsRaceResult, apiSportsDriver } from "../../model/apiSportsResponseTypes";
+import { apiSportsRaceResult, apiSportsDriver , apiSportsFastestLapResults} from "../../model/apiSportsResponseTypes";
 import { Driver, FastestLapsResultsStore, IdriverTiers, RaceResultsStore } from "../../model/dbTypes";
 import { IdriverNameToIdMap } from "../../model/dbTypes";
 import { SelectionParameters, SelectionParamsMap } from "../../model/frontEnd";
@@ -7,7 +7,7 @@ import { SelectionParameters, SelectionParamsMap } from "../../model/frontEnd";
 
 export class TierPointsDistributor{
     private RaceResults:RaceResultsStore|undefined;
-    private fastestLapResults:FastestLapsResultsStore|undefined
+    private fastestLapResults:apiSportsFastestLapResults|undefined
 
     private driverSelectionResult:apiSportsRaceResult|undefined
 
@@ -19,7 +19,7 @@ export class TierPointsDistributor{
     private points:number = 0
 
 
-    constructor(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:FastestLapsResultsStore){
+    constructor(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:apiSportsFastestLapResults){
         try {
 
             const driversInTier = driverTiers[tier].drivers as apiSportsDriver[]
@@ -106,15 +106,13 @@ export class TierPointsDistributor{
                 }
                 
             } else if (this.tier === 'fastestLap'){
-                const fLapsResults = this.fastestLapResults!.results.results
-                for(let i = 0; i < fLapsResults.length; i++){
-                    if(fLapsResults[i].position === 1){
-                        if(fLapsResults[i].driver.id === this.driverSeleciton?.id){
+                    if(this.fastestLapResults!.position === 1){
+                        if(this.fastestLapResults!.driver.id === this.driverSeleciton?.id){
                             this.points = 15;
                         }
                     }
                 }
-            }
+            
 
         } catch (error) {
             if(error instanceof Error){

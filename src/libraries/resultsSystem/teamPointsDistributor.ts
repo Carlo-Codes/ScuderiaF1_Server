@@ -1,6 +1,6 @@
 import { SelectionParamsMap, SelectionParameters, TeamFrontEnd } from "../../model/frontEnd";
 import { TierPointsDistributor } from "./TierPointsDistributor";
-import {apiSportsDriverRankRes} from './../../model/apiSportsResponseTypes'
+import {apiSportsDriverRankRes, apiSportsFastestLapResults} from './../../model/apiSportsResponseTypes'
 import {IdriverTiers, RaceResultsStore, Team, DriverApiStore, IdriverNameToIdMap, FastestLapsResultsStore} from './../../model/dbTypes'
 import { db } from "../../services/db/knexfile";
 
@@ -9,12 +9,12 @@ export class TeamPointsDistributor{
     private tierSelections:TierPointsDistributor[] = []
     private readonly team:Team;
     private driverTiers:IdriverTiers
-    private drivers:DriverApiStore
-    private fastestLapResults:FastestLapsResultsStore
+    private drivers:apiSportsDriverRankRes[]
+    private fastestLapResults:apiSportsFastestLapResults
     private teamWithPoints : TeamFrontEnd;
 
 
-    constructor(team:Team, driverTiers:IdriverTiers,  raceResults:RaceResultsStore, drivers:DriverApiStore, fastestLapResults:FastestLapsResultsStore){
+    constructor(team:Team, driverTiers:IdriverTiers,  raceResults:RaceResultsStore, drivers:apiSportsDriverRankRes[], fastestLapResults:apiSportsFastestLapResults){
         this.team = team
         this.teamWithPoints = team
         this.driverTiers = driverTiers;
@@ -27,7 +27,7 @@ export class TeamPointsDistributor{
                 const param = this.Params[i] as keyof SelectionParameters
                 const parameterSelection = this.team[SelectionParamsMap[param].dbSelection]
                 const driverTierName = SelectionParamsMap[param].IdriverTierName
-                const driverRankings = this.drivers.response.response as apiSportsDriverRankRes[]
+                const driverRankings = this.drivers
                 const driverObject = driverRankings.filter((driver)=>{
                     if (driver.driver.id === parameterSelection){
                         return driver

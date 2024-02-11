@@ -94,12 +94,6 @@ export async function updateCircuitPictures(raceRes:apiSportsRacesRes[]){
     }
 } 
 
-export async function getFastestLap(id:number){
-    const url = fastestLapURL + id
-    const res = await getFromApiSports(url) as apiSportsResponseBinding
-    const fastestLapResults = res.response as apiSportsFastestLapResults[]
-    return fastestLapResults
-}
 
 
 
