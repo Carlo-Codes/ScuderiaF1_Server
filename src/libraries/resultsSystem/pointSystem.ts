@@ -1,39 +1,34 @@
 import { DriverApiStore, DriverTierStore, IdriverTiers, Team } from '../../model/dbTypes';
 import { db } from '../../services/db/knexfile';
-import { getFastestLap, updateRacesApiStore } from '../data/dataPosting';
-import RaceDataManager from './raceDataManager'
+import {updateRacesApiStore } from '../data/dataPosting';
+import RaceDataManager from './DataManager'
 import { TeamPointsDistributor } from './teamPointsDistributor';
 import {apiSportsDriverRankRes} from '../../model/apiSportsResponseTypes'
+import DataManager from './DataManager';
  
 export class PointSystem{
     private date:number
     private timeBuffer = 3600000 //length of time before teams become uneditable
-    private resultsManager:RaceDataManager
+    private data:DataManager
     private teamPoints:TeamPointsDistributor[] = []; //for new results if any
     private teamsToCheck:Team[] = [] // for checking & setting editable status and passing into teampoints
     private uneditableTeams:Team[] = []
     private driverTiers:IdriverTiers|undefined
     private drivers : apiSportsDriverRankRes[] = []
 
-
-
-
     constructor(){
-        this.resultsManager = new RaceDataManager();
+        this.data = new DataManager();
         this.date = Date.now()
 
     }
 
     async init(){
-        this.resultsManager.init();
-        const dbTierRes = await db<DriverTierStore>('DriverTierStore').returning('*')
-        const dbDriverRes = await db<DriverApiStore>('DriverApiStore').returning('*')
+        await this.data.init();
 
-        this.driverTiers = dbTierRes[0].tiers
-        this.drivers = dbDriverRes[0].response.response as apiSportsDriverRankRes[] 
+
     }
 
-    updateRacesPlanned(){
+    private updateRacesPlanned(){
         updateRacesApiStore();
     }
 
@@ -46,11 +41,11 @@ export class PointSystem{
         }
     }
 
-    async setTeamsforUneditable(){
+    private async setTeamsforUneditable(){
         try {
             for (let i = 0; i < this.teamsToCheck.length; i++){
                 const teamRaceId = this.teamsToCheck[i].competition_id
-                const plannedRace = this.resultsManager.PlannedRaces.filter((race)=>{
+                const plannedRace = this.data.PlannedRaces.filter((race)=>{
                     if(race.id === teamRaceId){
                         return race
                     }
@@ -71,8 +66,8 @@ export class PointSystem{
 
     }
 
-    async checkTeamsForCalculatingPoints(){
-        const completedRaces = this.resultsManager.PlannedRaces.filter((race)=>{
+    private async checkTeamsForCalculatingPoints(){
+        const completedRaces = this.data.PlannedRaces.filter((race)=>{
             if(race.status === "Completed"){
                 return race
             }
@@ -84,29 +79,27 @@ export class PointSystem{
                 return team
             })
             for(let i = 0; i < raceTeams.length; i++){
-                const result = this.resultsManager.getResultfromId(completedRaces[i].id)
-                const fastestLapResult = await getFastestLap(completedRaces[i].id)
+                const result = this.data.getResultfromId(completedRaces[i].id)
+                const fastestLapResult = this.data.getFastestLapfromId(completedRaces[i].id).results
                 const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers!,result!,this.drivers!,fastestLapResult)
+                this.teamPoints.push(pointTeam)
             }
         }
 
     }
-    //get complteded races
-    //cross check team ids
-    //if points_calculatesd == false
-    //pass to team points
 
-
-    calculateAllPoints(){
+    private calculateAllPoints(){
 
     }
 
-    postTeamsWithPoints(){
+    private postTeamsWithPoints(){
 
     }
 
-    update(){
-        //to be called outside, for updating every few minutes in conjustion with data posting functions
+   async update(){
+        await this.getAllTeamsToCheck();
+        await this.setTeamsforUneditable();
+        await this.checkTeamsForCalculatingPoints();  //to be called outside, for updating every few minutes in conjustion with data posting functions
     }
 
 }

@@ -47,7 +47,6 @@ export default class DataManager{
         }
     }
 
-
     private async getFastestLap(id:number){
         const url = this.getFastetLapUrl + id
         const res = await getFromApiSports(url) as apiSportsResponseBinding
@@ -127,7 +126,7 @@ export default class DataManager{
                 const result = this.newfastestLaps[i]
                 if(!result) throw new Error("No race results")
                 
-                const dbRes = await db<FastestLapsResultsStore>('RaceResultsStore').insert({
+                const dbRes = await db<FastestLapsResultsStore>('FastestLapsResultsStore').insert({
                     id:id,
                     results:result
                 })
@@ -151,14 +150,14 @@ export default class DataManager{
             this.allDrivers = driverData[0]
             this.driverTierData = driverTierData[0]
 
-            if(!raceResultsPayload[0]||fastestLapResPayload[0]||driverData[0]||driverTierData[0]){
+            if(!raceResultsPayload[0]||!fastestLapResPayload[0]||!driverData[0]||!driverTierData[0]){
                 throw new Error('getting some or all data failed')
             }
 
         } catch (error) {
             if (error instanceof Error){
                 console.log(error)
-            }
+            } 
         } 
     }
 
@@ -193,7 +192,6 @@ export default class DataManager{
             
         }
     } 
-
 
     private async checkIfFastestLapResultsNeedGetting(){
         try {
@@ -253,11 +251,6 @@ export default class DataManager{
         await this.getallData();
     }
 
-    /*     private allRaceResults:RaceResultsStore[] = []
-    private allFastestLapResult:FastestLapsResultsStore[] =[]
-    private allDrivers:DriverApiStore|undefined
-    private driverTierData:DriverTierStore|undefined */
-
     get RaceResults():RaceResultsStore[]{
         return this.allRaceResults
     }
@@ -280,6 +273,15 @@ export default class DataManager{
 
     getResultfromId(id:number):RaceResultsStore|undefined{
         const filteredResults = this.allRaceResults.filter((result) => {
+            if(result.id === id){
+                return result
+            }
+        })
+        return filteredResults[0]
+    }
+
+    getFastestLapfromId(id:number){
+        const filteredResults = this.allFastestLapResult.filter((result) => {
             if(result.id === id){
                 return result
             }
