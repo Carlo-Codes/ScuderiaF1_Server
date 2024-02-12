@@ -260,7 +260,7 @@ export default class DataManager{
     }
 
     get PlannedRaces():apiSportsRacesRes[]{
-        return this.PlannedRaces
+        return this.racesPlanned
     }
 
     get Drivers():apiSportsDriverRankRes[]{
@@ -273,16 +273,16 @@ export default class DataManager{
 
     getResultfromId(id:number):RaceResultsStore|undefined{
         const filteredResults = this.allRaceResults.filter((result) => {
-            if(result.id === id){
+            if(result.id == id){
                 return result
             }
         })
-        return filteredResults[0]
+        return filteredResults[0] 
     }
 
     getFastestLapfromId(id:number){
         const filteredResults = this.allFastestLapResult.filter((result) => {
-            if(result.id === id){
+            if(result.id == id){
                 return result
             }
         })

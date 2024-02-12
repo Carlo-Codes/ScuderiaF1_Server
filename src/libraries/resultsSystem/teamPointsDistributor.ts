@@ -20,7 +20,7 @@ export class TeamPointsDistributor{
         this.driverTiers = driverTiers;
         this.fastestLapResults = fastestLapResults;
         this.drivers = drivers;
-        this.fastestLapResults = fastestLapResults
+        this.fastestLapResults = fastestLapResults 
 
         try {
             for(let i = 0; i < this.Params.length; i++){
@@ -33,9 +33,10 @@ export class TeamPointsDistributor{
                         return driver
                     }
                 })[0].driver;
-                
-                const tierPoints = new TierPointsDistributor(driverTierName!,raceResults,driverObject,this.driverTiers,this.fastestLapResults)
-                this.tierSelections.push(tierPoints)
+                if(param){
+                    const tierPoints = new TierPointsDistributor(param,raceResults,driverObject,this.driverTiers,this.fastestLapResults)
+                    this.tierSelections.push(tierPoints)
+                } 
             }
     
         } catch (error) {
@@ -45,11 +46,12 @@ export class TeamPointsDistributor{
 
     calculatePoints(){
         for(let i = 0; i < this.tierSelections.length; i++){
+            this.tierSelections[i].definePositions();
             this.tierSelections[i].calculatePoints()
         }
     }
 
-    assignPointsToTeam(){
+    assignPointsToTeam(){ 
         try {
             for(let i = 0; i < this.tierSelections.length; i++){
                 if(this.tierSelections[i]){

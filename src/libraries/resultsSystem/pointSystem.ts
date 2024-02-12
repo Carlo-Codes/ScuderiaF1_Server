@@ -12,9 +12,6 @@ export class PointSystem{
     private data:DataManager
     private teamPoints:TeamPointsDistributor[] = []; //for new results if any
     private teamsToCheck:Team[] = [] // for checking & setting editable status and passing into teampoints
-    private uneditableTeams:Team[] = []
-    private driverTiers:IdriverTiers|undefined
-    private drivers : apiSportsDriverRankRes[] = []
 
     constructor(){
         this.data = new DataManager();
@@ -36,7 +33,7 @@ export class PointSystem{
         try {
             const dbRes = await db<Team>('teams').where('points_calculated','=','false').returning('*')
             this.teamsToCheck = dbRes
-        } catch (error) {
+        } catch (error) { 
             console.log(error)
         }
     }
@@ -48,7 +45,7 @@ export class PointSystem{
                 const plannedRace = this.data.PlannedRaces.filter((race)=>{ //call stack limit problem
                     if(race.id === teamRaceId){
                         return race 
-                    }
+                    } 
                 })[0]
     
                 const raceDate = new Date(plannedRace.date).getTime()
@@ -69,23 +66,26 @@ export class PointSystem{
     private async checkTeamsForCalculatingPoints(){
         try {
             const completedRaces = this.data.PlannedRaces.filter((race)=>{
-                if(race.status === "Completed"){
+                if(race.status === "Completed" && race.type ==="Race"){
                     return race
                 }
             })
     
-            for (let i = 0; i < completedRaces.length; i++){
+            for (let i = 0; i < completedRaces.length; i++){ 
+                const raceId = completedRaces[i].id
                 const raceTeams = this.teamsToCheck.filter((team) =>{
-                    if(team.id === completedRaces[i].id)
+                    if(team.competition_id === raceId)
                     return team
                 })
                 for(let i = 0; i < raceTeams.length; i++){
-                    const result = this.data.getResultfromId(completedRaces[i].id)
+                    const result = this.data.getResultfromId(raceId)
                     const fastestLapResult = this.data.getFastestLapfromId(completedRaces[i].id).results
-                    const pointTeam = new TeamPointsDistributor(raceTeams[i],this.driverTiers!,result!,this.drivers!,fastestLapResult)
-                    this.teamPoints.push(pointTeam)
+                    if(this.data.DriverTiers && result){
+                        const pointTeam = new TeamPointsDistributor(raceTeams[i],this.data.DriverTiers,result,this.data.Drivers,fastestLapResult)
+                        this.teamPoints.push(pointTeam)     
+                    } else throw new Error('race data is missing data')
                 }
-            }
+            } 
     
         } catch (error) {
             console.log(error)
@@ -98,13 +98,16 @@ export class PointSystem{
             this.teamPoints[i].calculatePoints()
             this.teamPoints[i].assignPointsToTeam();
             await this.teamPoints[i].updateTeamWithPoints()
-        }
+        } 
     }
 
-   async update(){
+   async update(){//to be called outside, for updating every few minutes in conjustion with data posting functions
         await this.getAllTeamsToCheck();
         await this.setTeamsforUneditable();
-        await this.checkTeamsForCalculatingPoints();  //to be called outside, for updating every few minutes in conjustion with data posting functions
+        await this.checkTeamsForCalculatingPoints();
+        await this.calculateAllPointsAndPost()
+        
+        
     }
 
 }

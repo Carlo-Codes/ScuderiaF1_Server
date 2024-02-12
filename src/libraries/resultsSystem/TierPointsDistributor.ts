@@ -19,23 +19,33 @@ export class TierPointsDistributor{
     private points:number = 0
 
 
-    constructor(tier:keyof IdriverTiers, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:apiSportsFastestLapResults){
+    constructor(tier:keyof SelectionParameters, raceResults:RaceResultsStore, driver:apiSportsDriver, driverTiers:IdriverTiers, fastestLapResults:apiSportsFastestLapResults){
         try {
 
-            const driversInTier = driverTiers[tier].drivers as apiSportsDriver[]
-            let driverTierTest = driversInTier.find((d) => {d.id === driver.id})
-            if(driverTierTest){
-                this.RaceResults = raceResults
-                this.tier = tier
-                this.driverTiers = driverTiers
-                this.driverSeleciton = driver as apiSportsDriver
-                this.fastestLapResults = fastestLapResults
-            } else {
-                throw new Error('Driver Does not belong in tier')
+            const driverTierName = SelectionParamsMap[tier].IdriverTierName
+            
+            if(driverTierName){
+                const driversInTier = driverTiers[driverTierName].drivers as apiSportsDriver[]
+                let driverTierTest = driversInTier.find((d) => {
+                    if(d.id === driver.id){
+                        return d    
+                }
+                })
+                if(!driverTierTest){
+                    throw new Error('Driver Does not belong in tier') 
+                } 
             }
+
+            this.RaceResults = raceResults
+            this.tier = tier
+            this.driverTiers = driverTiers 
+            this.driverSeleciton = driver as apiSportsDriver
+            this.fastestLapResults = fastestLapResults
+            
+
         } catch (error) {
             if(error instanceof Error){
-                console.log(error)
+                console.log(error) 
             }
         }
 
@@ -45,19 +55,29 @@ export class TierPointsDistributor{
         try {
             //dont need to make this calculation if its a dnf or fastest lap
             //overallPosition
-            const SelectionResult = this.RaceResults?.results.results.find((result) => {result.driver.id === this.driverSeleciton?.id}) as apiSportsRaceResult
+            const SelectionResult = this.RaceResults?.results.results.find((result) => {
+                if(result.driver.id === this.driverSeleciton?.id){
+                    return result
+            }}) as apiSportsRaceResult
             if(!SelectionResult){
-                throw new Error('no overall position result')
+                this.points = 0
             }
             this.positionOverall = SelectionResult?.position
-            this.driverSelectionResult = SelectionResult
+            this.driverSelectionResult = SelectionResult 
             //
             //relativePosition to tier
-            let driversInTiersResults:apiSportsRaceResult[] = []
+            let driversInTiersResults:apiSportsRaceResult[] = [] 
             const tierName = SelectionParamsMap[this.tier!].IdriverTierName
-            const driversInTiers = this.driverTiers![tierName!].drivers! as apiSportsDriver[]
+            if(!tierName){
+                return //this is a tierless parameter
+            }
+            const driversInTiers = this.driverTiers![tierName!].drivers as apiSportsDriver[]
             for(let i = 0; i < driversInTiers.length; i++){
-                const driverPositionResult = this.RaceResults?.results.results.find((result) => {result.driver.id === driversInTiers[i].id})
+                const driverPositionResult = this.RaceResults?.results.results.find((result) => {
+                    if(result.driver.id === driversInTiers[i].id){
+                        return result
+                }})
+
                 if(driverPositionResult){
                     driversInTiersResults.push(driverPositionResult)
                 }
@@ -84,8 +104,10 @@ export class TierPointsDistributor{
                     this.points = 20;
                 } else if(this.positionTierRelative === 2){
                     this.points = 10;
-                } else if(this.points === 3){
+                } else if(this.positionTierRelative === 3){
                     this.points = 5
+                } else{
+                    this.points = 0
                 }
 
             } else if(this.tier === 'dnf'){
@@ -101,6 +123,8 @@ export class TierPointsDistributor{
                             this.points = 15
                         }else if (tierName === 'tier3'){
                             this.points = 10
+                        } else{
+                            this.points = 0
                         }
                     }
                 }
@@ -109,6 +133,8 @@ export class TierPointsDistributor{
                     if(this.fastestLapResults!.position === 1){
                         if(this.fastestLapResults!.driver.id === this.driverSeleciton?.id){
                             this.points = 15;
+                        } else {
+                            this.points = 0
                         }
                     }
                 }
