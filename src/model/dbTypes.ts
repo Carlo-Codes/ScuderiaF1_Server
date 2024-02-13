@@ -75,16 +75,17 @@ export interface draftTeam extends Omit<Team, 'competion_id'>{
 
 export interface League{
     id:number,
-    owner_user_id:number,
+    owner_user_id:string,
     league_name:string,
     inviteCode:string,
-    simulation:boolean
+    user_ids:string[]
+
 }
 
-export interface LeagueTeamRelation{
+export interface UserLeagueRelation{
     id:number,
-    team_id:number,
-    league_id:string
+    user_id:string,
+    league_id:number
 }
 
 export interface RacesApiStore{

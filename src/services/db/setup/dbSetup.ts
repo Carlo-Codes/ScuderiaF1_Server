@@ -83,10 +83,10 @@ async function createLeagesTable(){
   })
 }
 
-async function createTeamLeagueRelationTable(){
+async function createUserLeagueRelationTable(){
   await db.schema.withSchema('public').createTable('leagueTeamRelation', function (table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary() 
-    table.integer('team_id').references('teams.id')
+    table.string('user_id')
     table.integer('league_id').references('leagues.id')
   })
 }
@@ -130,7 +130,7 @@ async function createFastestLapsResults(){
 
 
  
-  export{createFastestLapsResults, createRaceResults, createDriverTierStore, createTeamsResultsTable, createTeamLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createFastestLapsResults, createRaceResults, createDriverTierStore, createTeamsResultsTable, createUserLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
    
  
   

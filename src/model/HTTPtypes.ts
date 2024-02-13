@@ -68,9 +68,8 @@ export interface dataResponse {
     driverTiers:IdriverTiers
 }
 
-export interface addTeamToLeagueReq extends tokenAuthRequest{
+export interface addUserToLeagueReq extends tokenAuthRequest{
     inviteCode:string
-    teamId:number
 }
 
 

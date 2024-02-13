@@ -1,6 +1,6 @@
 import {RequestHandler, Request}  from "express"
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
-import {newTeamRequest, editTeamRequest, tokenAuthRequest, addTeamToLeagueReq} from '../model/HTTPtypes'
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation } from "../model/dbTypes";
+import {newTeamRequest, editTeamRequest, tokenAuthRequest, addUserToLeagueReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
@@ -101,38 +101,32 @@ export const getUserTeams : RequestHandler = async (req:Request, res, next) => {
     }
 }
 
-export const joinTeamToLeague : RequestHandler = async (req:Request, res, next) => {
+export const joinUserToLeague : RequestHandler = async (req:Request, res, next) => {
     try {
 
-        const joinTeamReq : addTeamToLeagueReq = req.body
+        const joinTeamReq : addUserToLeagueReq = req.body
         const cogEamil = req.user
-        const teamLeague = await db<LeagueTeamRelation>('leagueTeamRelation')
-        .where('team_id', '=', joinTeamReq.teamId).returning('*')
+
         if(cogEamil){
-            if(!teamLeague[0]){
+            const UserLeague = await db<UserLeagueRelation>('UserLeagueRelation')
+            .where('user_id', '=', cogEamil.sub).returning('*')
+            if(!UserLeague[0]){
 
+                    const LeagueId = await db<League>('leagues')
+                    .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
 
-                const team = await db<Team>('teams')
-                .where('id', '=', joinTeamReq.teamId)
+                    if(LeagueId[0]){
+                        const dbres = await db<UserLeagueRelation>('leagueTeamRelation')
+                        .insert({
+                            user_id:cogEamil.username,
+                            league_id:LeagueId[0].id,
+                            
+                        })
+                        res.send(`Team Added to ${LeagueId[0]}`)
+    
+                    }
+
                 
-                if (team[0].user_id != cogEamil.username){
-                    throw new Error('error, this is not your team')
-                }
-
-                const league = await db<League>('leagues')
-                .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
-
-                if(!league[0]){
-                    throw new Error("League invite not valid")
-                } else{
-                    const dbres = await db<LeagueTeamRelation>('leagueTeamRelation')
-                    .insert({
-                        team_id:joinTeamReq.teamId,
-                        league_id:joinTeamReq.inviteCode,
-                        
-                    })
-                    res.send(`Team Added to ${league[0].league_name}`)
-                }
             } else{
                 throw new Error("Relationship already exists")
             }

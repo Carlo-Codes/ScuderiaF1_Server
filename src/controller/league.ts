@@ -1,5 +1,5 @@
 import { RequestHandler, Request } from "express"
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation } from "../model/dbTypes";
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation } from "../model/dbTypes";
 import {newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
@@ -11,9 +11,9 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
         const inviteCode = crypto.randomUUID() 
         const cogEmail = req.user
         if(cogEmail){
-            const user = await db<User>('users').where('email',cogEmail.sub)
+            
             const dbres = await db<League>('leagues').insert({ 
-                owner_user_id:user[0].id, 
+                owner_user_id:cogEmail.sub, 
                 league_name:leagueRequest.league_name,
                 inviteCode:inviteCode,
             }).returning('*')
@@ -29,12 +29,14 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
     
         }
 
+        
+
 
 
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err.message)
-            res.send(err.message).status(400)
+            res.status(400).send(err.message)
         }
     }
 }
@@ -45,7 +47,7 @@ export const getLeagueData : RequestHandler = async (req:Request,res,next) => {
         const cogUser = req.user
         if(cogUser){
             const payload = await db<League>('leagues')
-            .where('inviteCode', '=', leagueReq.inviteCode).returning('*')
+            .where('id', '=', leagueReq.inviteCode).returning('*')
             res.send(payload[0])            
         } else {
             res.send('cannot authorise').status(401)
@@ -65,18 +67,18 @@ export const getTeamsinLeague : RequestHandler = async (req:Request,res,next) =>
 
         if(cogUser){
 
-            const leagueTeamsIds = await db<LeagueTeamRelation>('leagueTeamRelation')
-            .where('league_inviteCode', '=', teamsinLequeReg.inviteCode).returning('team_id')
+            const userLeagues = await db<UserLeagueRelation>('UserLeagueRelation')
+            .where('league_id', '=', teamsinLequeReg.inviteCode).returning('user_id')
 
-            if(leagueTeamsIds.length === 0){
+            if(userLeagues.length === 0){
                 throw new Error("no leagues with that invite code.")
             }
 
         
             let teams:Team[] = []
-            for (let i = 0; i < leagueTeamsIds.length; i++){
+            for (let i = 0; i < userLeagues.length; i++){
                 const team = await db<Team>('teams')
-                .where('id', '=', leagueTeamsIds[i].team_id)
+                .where('user_id', '=', userLeagues[i].user_id)
                 .returning('*')
                 teams.push(team[0])
             }

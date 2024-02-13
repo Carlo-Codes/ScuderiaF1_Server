@@ -4,7 +4,7 @@ import app from './server'
 import 'dotenv/config'
 import createDatabase, { populateTables } from './services/db/setup'
 import RaceResultsManager from './libraries/resultsSystem/DataManager';
-import { createFastestLapsResults, createTeamLeagueRelationTable, createTeamsTable } from './services/db/setup/dbSetup';
+import { createFastestLapsResults, createUserLeagueRelationTable, createTeamsTable } from './services/db/setup/dbSetup';
 import { PointSystem } from './libraries/resultsSystem/pointSystem';
 
 

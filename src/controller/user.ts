@@ -1,6 +1,6 @@
 import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, LeagueTeamRelation, DriverTierStore } from "../model/dbTypes";
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, DriverTierStore } from "../model/dbTypes";
 import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
@@ -103,8 +103,8 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             for(let i = 0; i < teams.length; i++){
                 teamIds.push(teams[i].id)
             }
-            const participatingLeagueIDs = await db<LeagueTeamRelation>('leagueTeamRelation')
-            .whereIn('team_id',teamIds).returning('league_id')
+            const participatingLeagueIDs = await db<UserLeagueRelation>('UserLeagueRelation')
+            .where('user_id', '=' ,cogEamil.sub).returning('league_id')
 
             const participatingLeagues = await db<League>('leagues')
             .whereIn('id',participatingLeagueIDs)
