@@ -112,3 +112,8 @@ export interface FastestLapsResultsStore{
     id:number
     results:apiSportsFastestLapResults
 }
+
+export interface Usernames{
+    user_id:string,
+    username:string,
+}

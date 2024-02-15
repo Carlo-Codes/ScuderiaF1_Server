@@ -4,7 +4,7 @@ import app from './server'
 import 'dotenv/config'
 import createDatabase, { populateTables } from './services/db/setup'
 import RaceResultsManager from './libraries/resultsSystem/DataManager';
-import { createFastestLapsResults, createUserLeagueRelationTable, createTeamsTable } from './services/db/setup/dbSetup';
+import { createFastestLapsResults, createUserLeagueRelationTable, createTeamsTable, createUsernamesTable } from './services/db/setup/dbSetup';
 import { PointSystem } from './libraries/resultsSystem/pointSystem';
 
 
@@ -22,7 +22,8 @@ async function test(){
     await pointsSystem.update();
 }
 
-test()
+createUsernamesTable();
+//test()
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 //createDatabase();   

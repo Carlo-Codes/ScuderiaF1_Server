@@ -4,6 +4,7 @@ import { IdriverTiers } from "./dbTypes";
 
 
 export interface newUserRequest extends Omit <User,'id'>{
+    username:string
     password:string
 }
 

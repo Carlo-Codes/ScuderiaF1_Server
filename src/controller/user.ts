@@ -1,6 +1,6 @@
 import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, DriverTierStore } from "../model/dbTypes";
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, DriverTierStore, Usernames } from "../model/dbTypes";
 import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
@@ -19,14 +19,11 @@ export const newUser : RequestHandler = async (req, res, next) => {
         
 
         if(cogRes.UserSub){
-            const dbres = await db<User>('users').insert({email:cogRes.UserSub}).returning('*')
-            const newUserRes = checkdbRes(dbres[0],okMess, errMss)
-            if(newUserRes.code = 200){
-                res.send(cogRes).status(newUserRes.code)
-            }else{
-                const cogDelRes = await cogDelUser(userEmail)
-            }
-        } 
+            const dbres = await db<Usernames>('Usernames').insert({user_id:cogRes.UserSub}).returning('*')
+            
+        
+        }
+         
 
     } catch (err:unknown) { 
         if(err instanceof Error){
@@ -104,10 +101,16 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
                 teamIds.push(teams[i].id)
             }
             const participatingLeagueIDs = await db<UserLeagueRelation>('UserLeagueRelation')
-            .where('user_id', '=' ,cogEamil.sub).returning('league_id')
+            .where('user_id', '=' ,cogEamil.sub)
+
+            const partisLeagueIdsArr = participatingLeagueIDs.map((leagueMap)=>{
+                return leagueMap.league_id
+            })
+
+            
 
             const participatingLeagues = await db<League>('leagues')
-            .whereIn('id',participatingLeagueIDs)
+            .whereIn('id',partisLeagueIdsArr) 
 
             
 

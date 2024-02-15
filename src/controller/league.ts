@@ -17,6 +17,11 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
                 league_name:leagueRequest.league_name,
                 inviteCode:inviteCode,
             }).returning('*')
+
+            const addUserToLeague = await db<UserLeagueRelation>('UserLeagueRelation').insert({
+                user_id:cogEmail.sub,
+                league_id:dbres[0].id
+            })
     
             const okMess = `${leagueRequest.league_name} succesfully added to database`
             const errMss = `${leagueRequest.league_name} couldnt be added to database`

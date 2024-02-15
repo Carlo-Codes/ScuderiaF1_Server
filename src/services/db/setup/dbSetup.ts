@@ -125,12 +125,17 @@ async function createFastestLapsResults(){
     table.bigInteger('id').primary()
     table.json('results')
   })
-
 }
 
+async function createUsernamesTable(){
+  await db.schema.withSchema('public').createTable('Usernames', function (table: Knex.CreateTableBuilder){
+    table.string('user_id').unique
+    table.string('username')
+  }) 
+}
 
  
-  export{createFastestLapsResults, createRaceResults, createDriverTierStore, createTeamsResultsTable, createUserLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
+  export{createUsernamesTable, createFastestLapsResults, createRaceResults, createDriverTierStore, createTeamsResultsTable, createUserLeagueRelationTable,createDraftTeamsTable, createUserTable, createDriverTable, createTeamsTable, createLeagesTable, createRacesApiStore, createDriverApiStore}
    
  
   
