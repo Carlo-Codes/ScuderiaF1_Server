@@ -19,9 +19,11 @@ export const newUser : RequestHandler = async (req, res, next) => {
         
 
         if(cogRes.UserSub){
-            const dbres = await db<Usernames>('Usernames').insert({user_id:cogRes.UserSub}).returning('*')
+            const dbres = await db<Usernames>('Usernames').insert({
+                user_id:cogRes.UserSub,
+                username:userRequest.username
+            }).returning('*')
             
-        
         }
          
 

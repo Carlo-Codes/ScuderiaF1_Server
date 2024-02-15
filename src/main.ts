@@ -22,7 +22,7 @@ async function test(){
     await pointsSystem.update();
 }
 
-createUsernamesTable();
+
 //test()
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))

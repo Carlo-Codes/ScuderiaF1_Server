@@ -129,7 +129,7 @@ async function createFastestLapsResults(){
 
 async function createUsernamesTable(){
   await db.schema.withSchema('public').createTable('Usernames', function (table: Knex.CreateTableBuilder){
-    table.string('user_id').unique
+    table.string('user_id').unique()
     table.string('username')
   }) 
 }
