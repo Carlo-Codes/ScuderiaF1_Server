@@ -9,6 +9,7 @@ export let userRouter = express.Router()
 //secure methods
 userRouter.use(authenticateToken)
 userRouter.get("/getData", Controller.getData)
+userRouter.post("/addUserToLeague",Controller.joinUserToLeague)
 
 
 //router.get("/getUser",)

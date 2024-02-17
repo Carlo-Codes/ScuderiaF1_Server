@@ -1,7 +1,7 @@
 import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, DriverTierStore, Usernames } from "../model/dbTypes";
-import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest} from '../model/HTTPtypes'
+import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest, addUserToLeagueReq, joinLeagueRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
@@ -112,7 +112,9 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             
 
             const participatingLeagues = await db<League>('leagues')
-            .whereIn('id',partisLeagueIdsArr) 
+            .whereIn('id',partisLeagueIdsArr).select('id', 'league_name', 'user_ids')
+            
+            
 
             
 
@@ -132,6 +134,7 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
         } else {
             res.status(401).send('cannot authorise')
         }
+
     } catch (err:unknown) {
         if(err instanceof Error){
             console.log(err)
@@ -158,4 +161,46 @@ export const refreshToken : RequestHandler = async (req:Request,res,next) => {
         }
     }
 }
+
+export const joinUserToLeague : RequestHandler = async (req:Request, res, next) => {
+    try {
+
+        const joinTeamReq = req.body as joinLeagueRequest
+        const cogEamil = req.user
+
+        if(cogEamil){
+            const League = await db<League>('leagues')
+                    .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
+            if(!League[0]) throw new Error('No league found')
+
+            const UserLeagueTest = await db<UserLeagueRelation>('UserLeagueRelation')
+            .where({'league_id' : League[0].id, 'user_id':cogEamil.sub}).returning('*')
+
+            if(!UserLeagueTest[0]){
+
+                    if(League[0]){
+                        const dbres = await db<UserLeagueRelation>('UserLeagueRelation')
+                        .insert({
+                            user_id:cogEamil.username,
+                            league_id:League[0].id,
+                            
+                        })
+                        res.send(`Team Added to ${League[0]}`)
+                    }
+            } else{
+                throw new Error("Relationship already exists")
+            }
+        
+        } else { 
+            res.status(401).send('cannot authorise')
+        }
+    } catch (err:unknown) {
+
+        if(err instanceof Error){
+            console.log(err)
+            res.status(400).send(err.message)
+        }
+    }
+}
+
 

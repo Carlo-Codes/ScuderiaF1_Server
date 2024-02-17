@@ -18,8 +18,12 @@ export interface newTeamRequest extends Omit <Team,'id'| 'user_id'>{
 
 }
 
-export interface newLeagueRequest extends Omit <League,'id'|'inviteCode'|'owner_user_id'>{
+export interface newLeagueRequest extends Omit <League,'id'|'inviteCode'|'owner_user_id'|'user_ids'>{
     token:string
+}
+
+export interface joinLeagueRequest extends tokenAuthRequest{
+    inviteCode:string
 }
 
 export interface authenticationRequest {
@@ -65,7 +69,7 @@ export interface dataResponse {
     raceData:apiSportsRacesRes[],
     userTeams:Team[]
     userLeagues:League[]
-    participatingLeague:League[]
+    participatingLeague:Pick<League, "id" | "user_ids" | "league_name">[]
     driverTiers:IdriverTiers
 }
 
