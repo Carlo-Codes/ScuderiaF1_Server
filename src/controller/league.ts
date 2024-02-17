@@ -62,15 +62,19 @@ export const deleteLeague : RequestHandler = async (req:Request,res,next) => {
                 }
             }
             if(ownershipCheck){
-                const dbres = await db<UserLeagueRelation>('UserLeagueRelation').where('league_id', '=', leagueRequest.leagueId).delete()
-                const leagueDbres = await db<League>('leagues').where('id', '=', leagueRequest.leagueId).delete()
-                res.status(200)
+                const dbres = await db<UserLeagueRelation>('UserLeagueRelation')
+                .where('league_id', '=', leagueRequest.leagueId).delete()
+
+                const leagueDbres = await db<League>('leagues')
+                .where('id', '=', leagueRequest.leagueId).delete()
+                
+                res.status(200).send('league deleted')
             } else {
                 throw new Error('you do not own this league')
             }
 
         } else {
-            res.status(401).send('cannot authorise')
+            throw new Error('unaurthorised')
     
         }
 

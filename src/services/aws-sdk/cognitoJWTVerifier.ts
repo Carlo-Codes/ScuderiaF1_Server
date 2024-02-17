@@ -9,8 +9,13 @@ export const verifier = CognitoJwtVerifier.create({
 })
 
 
-export async function cogVerifyToken(token:string):Promise<CognitoAccessTokenPayload>{
-    const payload = await verifier.verify(token)
-    return(payload)
+export async function cogVerifyToken(token:string):Promise<CognitoAccessTokenPayload|undefined>{
+    try {
+        const payload = await verifier.verify(token)
+        return(payload)
+    } catch (error) {
+        
+    }
+
 }
 

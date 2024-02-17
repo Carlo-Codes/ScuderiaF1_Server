@@ -5,7 +5,7 @@ import {generateDriverTiers} from '../../../libraries/data/generateDriverranking
 
 
 export default async function createDatabase(){
-    await createTables()
+    await createTables() 
     await populateTables()
 }
 
