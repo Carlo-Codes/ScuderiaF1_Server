@@ -1,5 +1,5 @@
 import { apiSportsDriverRankRes, apiSportsRacesRes } from "./apiSportsResponseTypes";
-import { Driver, League, Team, User, draftTeam } from "./dbTypes";
+import { Driver, League, Team, User, Usernames, draftTeam } from "./dbTypes";
 import { IdriverTiers } from "./dbTypes";
 
 
@@ -56,11 +56,20 @@ export interface editTeamRequest extends newTeamRequest {
 }
 
 export interface getLeagueDataReq extends tokenAuthRequest{
-    inviteCode:string
+    id:number
 }
 
 export interface getTeamsinLeageReq extends tokenAuthRequest{
-    inviteCode:string
+    id:number 
+}
+
+export interface getUsersinLeageReq extends tokenAuthRequest{
+    id:number 
+}
+
+
+export interface getUsersinLeageRes{
+    users:Usernames[]
 }
 
 export interface LeagueAndTeams{

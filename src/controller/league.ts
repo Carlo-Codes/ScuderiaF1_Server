@@ -1,6 +1,6 @@
 import { RequestHandler, Request } from "express"
-import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation } from "../model/dbTypes";
-import {newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq, DeleteLeagueRequest} from '../model/HTTPtypes'
+import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, Usernames } from "../model/dbTypes";
+import {getUsersinLeageRes, newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq, DeleteLeagueRequest, getUsersinLeageReq} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
@@ -93,7 +93,7 @@ export const getLeagueData : RequestHandler = async (req:Request,res,next) => {
         const cogUser = req.user
         if(cogUser){
             const payload = await db<League>('leagues')
-            .where('id', '=', leagueReq.inviteCode).returning('*')
+            .where('id', '=', leagueReq.id).returning('*')
             res.send(payload[0])            
         } else {
             res.send('cannot authorise').status(401)
@@ -114,7 +114,7 @@ export const getTeamsinLeague : RequestHandler = async (req:Request,res,next) =>
         if(cogUser){
 
             const userLeagues = await db<UserLeagueRelation>('UserLeagueRelation')
-            .where('league_id', '=', teamsinLequeReg.inviteCode).returning('user_id')
+            .where('league_id', '=', teamsinLequeReg.id).returning('user_id')
 
             if(userLeagues.length === 0){
                 throw new Error("no leagues with that invite code.")
@@ -123,10 +123,10 @@ export const getTeamsinLeague : RequestHandler = async (req:Request,res,next) =>
         
             let teams:Team[] = []
             for (let i = 0; i < userLeagues.length; i++){
-                const team = await db<Team>('teams')
+                const teamres = await db<Team>('teams')
                 .where('user_id', '=', userLeagues[i].user_id)
                 .returning('*')
-                teams.push(team[0])
+                teams = [...teams, ...teamres]
             }
             
             res.send(teams)
@@ -140,3 +140,43 @@ export const getTeamsinLeague : RequestHandler = async (req:Request,res,next) =>
         }
     }
 }
+
+export const getUsersinLeague : RequestHandler = async (req:Request,res,next) => {
+    try {
+        const usersinLequeReg : getUsersinLeageReq = req.body
+        const cogUser = req.user
+
+        if(cogUser){
+
+            const userLeagues = await db<UserLeagueRelation>('UserLeagueRelation')
+            .where('league_id', '=', usersinLequeReg.id).returning('user_id')
+
+            if(userLeagues.length === 0){
+                throw new Error("no leagues with that invite code.")
+            }
+
+            
+            let users:Usernames[] = []
+
+            for (let i = 0; i < userLeagues.length; i++){
+                const user = await db<Usernames>('Usernames')
+                .where('user_id', '=', userLeagues[i].user_id)
+                .returning('*')
+                users.push(user[0])
+            }
+            let parsedRes:getUsersinLeageRes = {
+                users:users
+            }
+
+            res.status(200).send(parsedRes)
+        } else {
+            res.send('cannot authorise').status(401)
+        }
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err)
+            res.send(err.message).status(400)
+        }
+    }
+}
+

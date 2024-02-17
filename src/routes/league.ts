@@ -6,5 +6,7 @@ export let leagueRouter = express.Router()
 leagueRouter.use(authenticateToken)
 leagueRouter.post("/newLeague", Controller.newLeague)
 leagueRouter.post("/deleteLeague", Controller.deleteLeague)
-leagueRouter.get('/getTeamsInLeague', Controller.getTeamsinLeague)
+//leagueRouter.post("/getLeague", Controller.getLeagueData)
+leagueRouter.post('/getTeamsInLeague', Controller.getTeamsinLeague)
+leagueRouter.post('/getUsersinLeague', Controller.getUsersinLeague)
 
