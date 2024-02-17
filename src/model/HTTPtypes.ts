@@ -26,6 +26,10 @@ export interface joinLeagueRequest extends tokenAuthRequest{
     inviteCode:string
 }
 
+export interface DeleteLeagueRequest extends tokenAuthRequest{
+    leagueId:number
+}
+
 export interface authenticationRequest {
     email:string,
     password:string
@@ -69,7 +73,7 @@ export interface dataResponse {
     raceData:apiSportsRacesRes[],
     userTeams:Team[]
     userLeagues:League[]
-    participatingLeague:Pick<League, "id" | "user_ids" | "league_name">[]
+    participatingLeague:Pick<League, "id" | "league_name">[]
     driverTiers:IdriverTiers
 }
 

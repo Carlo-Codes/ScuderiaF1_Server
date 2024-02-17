@@ -78,8 +78,6 @@ export interface League{
     owner_user_id:string,
     league_name:string,
     inviteCode:string,
-    user_ids:string[]
-
 }
 
 export interface UserLeagueRelation{

@@ -112,10 +112,7 @@ export const getData : RequestHandler = async (req:Request,res,next) => {
             
 
             const participatingLeagues = await db<League>('leagues')
-            .whereIn('id',partisLeagueIdsArr).select('id', 'league_name', 'user_ids')
-            
-            
-
+            .whereIn('id',partisLeagueIdsArr).select('id', 'league_name')
             
 
             const raceData = dbRaceData[0].response.response as apiSportsRacesRes[]

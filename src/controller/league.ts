@@ -1,6 +1,6 @@
 import { RequestHandler, Request } from "express"
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation } from "../model/dbTypes";
-import {newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq} from '../model/HTTPtypes'
+import {newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq, DeleteLeagueRequest} from '../model/HTTPtypes'
 import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
@@ -10,8 +10,10 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
         const leagueRequest : newLeagueRequest = req.body
         const inviteCode = crypto.randomUUID() 
         const cogEmail = req.user
+       
         if(cogEmail){
-            
+            const alreadyOwenedLeagues = await db<League>('leagues').where('owner_user_id' , '=' , cogEmail.sub)
+            if(alreadyOwenedLeagues.length >= 3) throw new Error('3 League maximum')
             const dbres = await db<League>('leagues').insert({ 
                 owner_user_id:cogEmail.sub, 
                 league_name:leagueRequest.league_name,
@@ -36,6 +38,41 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
 
         
 
+
+
+    } catch (err:unknown) {
+        if(err instanceof Error){
+            console.log(err.message)
+            res.status(400).send(err.message)
+        }
+    }
+}
+
+export const deleteLeague : RequestHandler = async (req:Request,res,next) => {
+    try {
+        const leagueRequest : DeleteLeagueRequest = req.body
+        const cogEmail = req.user
+        let ownershipCheck = false;
+       
+        if(cogEmail){
+            const alreadyOwenedLeagues = await db<League>('leagues').where('owner_user_id' , '=' , cogEmail.sub)
+            for(let i = 0; i < alreadyOwenedLeagues.length; i++){
+                if(alreadyOwenedLeagues[i].id === leagueRequest.leagueId ){
+                    ownershipCheck = true
+                }
+            }
+            if(ownershipCheck){
+                const dbres = await db<UserLeagueRelation>('UserLeagueRelation').where('league_id', '=', leagueRequest.leagueId).delete()
+                const leagueDbres = await db<League>('leagues').where('id', '=', leagueRequest.leagueId).delete()
+                res.status(200)
+            } else {
+                throw new Error('you do not own this league')
+            }
+
+        } else {
+            res.status(401).send('cannot authorise')
+    
+        }
 
 
     } catch (err:unknown) {

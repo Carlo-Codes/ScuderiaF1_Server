@@ -5,4 +5,6 @@ import {authenticateToken} from '../controller/middleware/auth'
 export let leagueRouter = express.Router()
 leagueRouter.use(authenticateToken)
 leagueRouter.post("/newLeague", Controller.newLeague)
+leagueRouter.post("/deleteLeague", Controller.deleteLeague)
 leagueRouter.get('/getTeamsInLeague', Controller.getTeamsinLeague)
+
