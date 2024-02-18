@@ -4,7 +4,7 @@ import { DriverApiStore, RacesApiStore } from '../../model/dbTypes';
 import {apiSportsFastestLapResults, apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../../model/apiSportsResponseTypes'
 import path from 'path';
 import * as fs from 'node:fs/promises';
-const seasonYear = 2023
+const seasonYear = 2024
 const racesUrl = `https://v1.formula-1.api-sports.io/races?season=${seasonYear}`
 const driverUrl = `https://v1.formula-1.api-sports.io/rankings/drivers?season=${seasonYear}`
 const fastestLapURL = `https://v1.formula-1.api-sports.io/rankings/fastestlaps?race=`

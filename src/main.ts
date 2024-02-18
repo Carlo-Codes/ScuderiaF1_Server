@@ -16,14 +16,16 @@ app.listen(port, ()=>{
     console.log(port) 
 }) 
 
-async function test(){ 
-    const pointsSystem = new PointSystem();
+const pointsSystem = new PointSystem();
+
+async function pointSystenLoop(){
     await pointsSystem.init();
-    await pointsSystem.update();
+    setInterval(async()=>{
+        await pointsSystem.update();
+    },1800000)
 }
 
-
-//test()
+pointSystenLoop();
 
 //downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 //createDatabase();   

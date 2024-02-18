@@ -102,12 +102,11 @@ export class PointSystem{
     }
 
    async update(){//to be called outside, for updating every few minutes in conjustion with data posting functions
+        await this.data.update();
         await this.getAllTeamsToCheck();
         await this.setTeamsforUneditable();
         await this.checkTeamsForCalculatingPoints();
         await this.calculateAllPointsAndPost()
-        
-        
     }
 
 }

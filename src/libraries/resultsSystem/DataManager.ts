@@ -3,6 +3,7 @@ import {apiSportsDriverRankRes, apiSportsRaceResult, apiSportsRacesRes, apiSport
 import { RacesApiStore, RaceResultsStore, DriverApiStore, IdriverTiers, FastestLapsResultsStore, DriverTierStore} from "../../model/dbTypes";
 import {db} from '../../services/db/knexfile'
 import { getFromApiSports } from "../data/dataFetch";
+import { updateDriverPictures, updateDriversApiStore, updateRacesApiStore } from "../data/dataPosting";
 
 
 
@@ -237,6 +238,9 @@ export default class DataManager{
 
     async update(){
         this.date = Date.now();
+        await updateRacesApiStore();
+        await updateDriversApiStore();
+        
         await this.getRacesPlanned();
 
         await this.checkIfRaceResultsNeedGetting();

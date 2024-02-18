@@ -12,13 +12,13 @@ export const newUser : RequestHandler = async (req, res, next) => {
     try {
         const userRequest:newUserRequest = req.body
         const userEmail = userRequest.email
-        const okMess = `${userEmail} succesfully added to database`
-        const errMss = `${userEmail} couldnt be added to database`
+
+        const usernameRes = await db<Usernames>('Usernames').where('username', '=', userRequest.username)
+        if(usernameRes[0]) throw new Error('Username Already Exists')
 
         const cogRes = await cogSignup(userEmail,userRequest.password,userEmail);
-        
 
-        if(cogRes.UserSub){
+        if(cogRes.UserConfirmed){
             const dbres = await db<Usernames>('Usernames').insert({
                 user_id:cogRes.UserSub,
                 username:userRequest.username

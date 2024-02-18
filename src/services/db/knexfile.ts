@@ -12,7 +12,7 @@ const config: { [key: string]: Knex.Config } = {
       database: env.DB_NAME,
       password:env.DB_PASSWORD
     },
-    debug:true
+    debug:false
   },
 
   staging: {
