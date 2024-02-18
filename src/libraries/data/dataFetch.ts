@@ -23,6 +23,7 @@ export async function downloadAsset(url:string, filename:string){
         const res = await fetch(url)
         if(res.status != 200){
             console.log('error downloading imager, try again')
+            console.log(res.text())
             return 
         }
         const data = await res.buffer()

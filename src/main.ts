@@ -6,6 +6,7 @@ import createDatabase, { populateTables } from './services/db/setup'
 import RaceResultsManager from './libraries/resultsSystem/DataManager';
 import { createFastestLapsResults, createUserLeagueRelationTable, createTeamsTable, createUsernamesTable } from './services/db/setup/dbSetup';
 import { PointSystem } from './libraries/resultsSystem/pointSystem';
+import { updateCircuitPictures, updateDriverPictures } from './libraries/data/dataPosting';
 
 
 const port = env.PORT
@@ -27,6 +28,5 @@ async function pointSystenLoop(){
 
 pointSystenLoop();
 
-//downloadAsset('https://media-4.api-sports.io/formula-1/drivers/25.png', path.join(baseDir, 'image.png'))
 //createDatabase();   
 //populateTables();

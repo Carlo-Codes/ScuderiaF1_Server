@@ -3,7 +3,7 @@ import {apiSportsDriverRankRes, apiSportsRaceResult, apiSportsRacesRes, apiSport
 import { RacesApiStore, RaceResultsStore, DriverApiStore, IdriverTiers, FastestLapsResultsStore, DriverTierStore} from "../../model/dbTypes";
 import {db} from '../../services/db/knexfile'
 import { getFromApiSports } from "../data/dataFetch";
-import { updateDriverPictures, updateDriversApiStore, updateRacesApiStore } from "../data/dataPosting";
+import { updateCircuitPictures, updateDriverPictures, updateDriversApiStore, updateRacesApiStore } from "../data/dataPosting";
 
 
 
@@ -237,22 +237,31 @@ export default class DataManager{
     }
 
     async update(){
-        this.date = Date.now();
-        await updateRacesApiStore();
-        await updateDriversApiStore();
-        
-        await this.getRacesPlanned();
+        try {
+            this.date = Date.now();
+            await updateRacesApiStore();
+            await updateDriversApiStore();
+            
+            await this.getRacesPlanned();
+    
+            await this.checkIfRaceResultsNeedGetting();
+            await this.checkIfFastestLapResultsNeedGetting();
+    
+            await this.getNewResults();
+            await this.getFastestLaps();
+    
+            await this.postNewResults();
+            await this.postNewFastestLapResults();
+    
+            await this.getallData();
+    
+            await updateDriverPictures(this.allDrivers?.response.response as apiSportsDriverRankRes[]);
+            await updateCircuitPictures(this.PlannedRaces);
+            
+        } catch (error) {
+            console.log(error)
+        }
 
-        await this.checkIfRaceResultsNeedGetting();
-        await this.checkIfFastestLapResultsNeedGetting();
-
-        await this.getNewResults();
-        await this.getFastestLaps();
-
-        await this.postNewResults();
-        await this.postNewFastestLapResults();
-
-        await this.getallData();
     }
 
     get RaceResults():RaceResultsStore[]{
