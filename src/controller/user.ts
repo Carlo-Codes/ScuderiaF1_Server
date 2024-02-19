@@ -2,7 +2,7 @@ import { RequestHandler , Request} from "express"
 import {apiSportsRacesRes, apiSportsDriverRankRes, } from '../model/apiSportsResponseTypes'
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, DriverTierStore, Usernames } from "../model/dbTypes";
 import {newUserRequest, resendConfirmationCodeRequest, confirmUserRequest, authenticationRequest, dataResponse, tokenAuthRequest, addUserToLeagueReq, joinLeagueRequest} from '../model/HTTPtypes'
-import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken} from "../services/aws-sdk/cognito";
+import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogAuthToken, cogGetUser} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
 
@@ -165,6 +165,13 @@ export const joinUserToLeague : RequestHandler = async (req:Request, res, next) 
         const joinTeamReq = req.body as joinLeagueRequest
         const cogEamil = req.user
 
+        const cogUser =  await cogGetUser(req.accessToken!)
+        const username = cogUser.UserAttributes?.filter((attr)=>{
+            if(attr.Name === 'preferred_username'){
+                return attr
+            }
+        })[0].Value
+
         if(cogEamil){
             const League = await db<League>('leagues')
                     .where('inviteCode', '=', joinTeamReq.inviteCode).returning('*')
@@ -172,6 +179,15 @@ export const joinUserToLeague : RequestHandler = async (req:Request, res, next) 
 
             const UserLeagueTest = await db<UserLeagueRelation>('UserLeagueRelation')
             .where({'league_id' : League[0].id, 'user_id':cogEamil.sub}).returning('*')
+
+
+            const UsernameStore = await db<Usernames>('Usernames').where('user_id', '=', cogEamil.sub)
+            if(UsernameStore.length < 1){
+                const addUsername = await db<Usernames>('Usernames').insert({
+                    user_id:cogEamil.sub,
+                    username: username
+                })
+            }
 
             if(!UserLeagueTest[0]){
 

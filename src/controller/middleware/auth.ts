@@ -9,6 +9,7 @@ export const authenticateToken : RequestHandler = async (req:Request, res, next)
         if(token){
             const user = await cogVerifyToken(token)
             req.user = user
+            req.accessToken = token
             next()
         } else throw new Error('No Token Recieved')
         

@@ -4,6 +4,7 @@ import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provi
 declare module 'express'  {
   interface Request {
     user?: CognitoAccessTokenPayload
+    accessToken?:string
     authenticationResult?: AuthenticationResultType
   }
 } 

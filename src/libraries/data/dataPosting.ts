@@ -64,7 +64,7 @@ export async function updateDriverPictures(driverRes:apiSportsDriverRankRes[]) {
     for (const file of files){
         filenames.push(path.parse(file).name) 
     }
-
+ 
     for (let i = 0; i < driverRes.length; i++){ 
         const url = driverRes[i].driver.image
         const name = driverRes[i].driver.name

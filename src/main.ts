@@ -23,7 +23,7 @@ async function pointSystenLoop(){
     await pointsSystem.init();
     setInterval(async()=>{
         await pointsSystem.update();
-    },1800000)
+    },1800000) 
 }
 
 pointSystenLoop();

@@ -1,7 +1,7 @@
 import { RequestHandler, Request } from "express"
 import { Team, User, Driver, League, RacesApiStore, DriverApiStore, draftTeam, UserLeagueRelation, Usernames } from "../model/dbTypes";
 import {getUsersinLeageRes, newLeagueRequest, getLeagueDataReq, getTeamsinLeageReq, DeleteLeagueRequest, getUsersinLeageReq} from '../model/HTTPtypes'
-import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword} from "../services/aws-sdk/cognito";
+import { cogSignup, cogDelUser, cogResendConfirmationCode, cogConfirmUser, cogAuthPassword, cogGetUser} from "../services/aws-sdk/cognito";
 import {checkdbRes} from '../libraries/db/checkDbResponse'
 import { db } from "../services/db/knexfile";
 
@@ -10,6 +10,12 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
         const leagueRequest : newLeagueRequest = req.body
         const inviteCode = crypto.randomUUID() 
         const cogEmail = req.user
+        const cogUser =  await cogGetUser(req.accessToken!)
+        const username = cogUser.UserAttributes?.filter((attr)=>{
+            if(attr.Name === 'preferred_username'){
+                return attr
+            }
+        })[0].Value
        
         if(cogEmail){
             const alreadyOwenedLeagues = await db<League>('leagues').where('owner_user_id' , '=' , cogEmail.sub)
@@ -24,6 +30,14 @@ export const newLeague : RequestHandler = async (req:Request,res,next) => {
                 user_id:cogEmail.sub,
                 league_id:dbres[0].id
             })
+
+            const UsernameStore = await db<Usernames>('Usernames').where('user_id', '=', cogEmail.sub)
+            if(UsernameStore.length < 1){
+                const addUsername = await db<Usernames>('Usernames').insert({
+                    user_id:cogEmail.sub,
+                    username: username
+                })
+            }
     
             const okMess = `${leagueRequest.league_name} succesfully added to database`
             const errMss = `${leagueRequest.league_name} couldnt be added to database`
