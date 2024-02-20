@@ -51,55 +51,61 @@ const driverTiers:IdriverTiersNames={
 }
 
 export async function generateDriverTiers(){
-    interface driverNameIDTiers extends IdriverTiers{
-        tier1:{
-            drivers: IdriverNameToIdMap[]
-        },
-        tier2:{
-            drivers: IdriverNameToIdMap[]
-        },
-        tier3:{
-            drivers: IdriverNameToIdMap[]
-        },
-    }
-    const driverNameIDTiers:driverNameIDTiers = {
-        tier1:{drivers:[]},
-        tier2:{drivers:[]},
-        tier3:{drivers:[]},
-
-    }
-    const payload = await db<DriverApiStore>('DriverApiStore')
-            .where('id', '=','1').returning('*')
-
-    const drivers = payload[0].response.response as apiSportsDriverRankRes[]
-
-    let tier : keyof IdriverTiers
-
-    for(tier in driverTiers){
-        for (let i = 0; i < driverTiers[tier].drivers.length;i++){ 
-            
-            const driverName = driverTiers[tier].drivers[i] as string
-            const driverID = drivers.filter((driver)=>{
-                if(driver.driver.name === driverName){
-                    return driver
-                }
-            })[0]
-            const driverNameId:IdriverNameToIdMap = {
-                name:driverName,
-                id:driverID.driver.id,
-            }
-            driverNameIDTiers[tier].drivers!.push(driverNameId)  
+    try {
+        interface driverNameIDTiers extends IdriverTiers{
+            tier1:{
+                drivers: IdriverNameToIdMap[] 
+            },
+            tier2:{
+                drivers: IdriverNameToIdMap[]
+            },
+            tier3:{
+                drivers: IdriverNameToIdMap[]
+            },
         }
-    }
-
-    const currentStore = await db<DriverTierStore>('DriverTierStore').where('id', '1')
-    if(currentStore[0]){
-        const res = await db<DriverTierStore>('DriverTierStore').where('id', '1').update({
-            tiers:driverNameIDTiers
-        })
-    }else{
-        const res = await db<DriverTierStore>('DriverTierStore').insert({
-            tiers:driverNameIDTiers
-        })
+        const driverNameIDTiers:driverNameIDTiers = {
+            tier1:{drivers:[]}, 
+            tier2:{drivers:[]},
+            tier3:{drivers:[]}, 
+    
+        }
+        const payload = await db<DriverApiStore>('DriverApiStore')
+                .where('id', '=','1').returning('*')
+    
+        const drivers = payload[0].response.response as apiSportsDriverRankRes[]
+    
+        let tier : keyof IdriverTiers
+    
+        for(tier in driverTiers){
+            for (let i = 0; i < driverTiers[tier].drivers.length;i++){  
+                
+                const driverName = driverTiers[tier].drivers[i] as string
+                const driverID = drivers.filter((driver)=>{
+                    if(driver.driver.name === driverName){
+                        return driver
+                    }
+                })[0]
+                const driverNameId:IdriverNameToIdMap = {
+                    name:driverName,
+                    id:driverID.driver.id,
+                }
+                driverNameIDTiers[tier].drivers!.push(driverNameId)  
+            }
+        }
+    
+        const currentStore = await db<DriverTierStore>('DriverTierStore').where('id', '1')
+        if(currentStore[0]){
+            const res = await db<DriverTierStore>('DriverTierStore').where('id', '1').update({
+                tiers:driverNameIDTiers
+            })
+        }else{
+            const res = await db<DriverTierStore>('DriverTierStore').insert({
+                tiers:driverNameIDTiers
+            })
+        }
+    
+        
+    } catch (error) {
+        console.log(error)
     }
 }

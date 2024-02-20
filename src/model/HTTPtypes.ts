@@ -1,5 +1,5 @@
 import { apiSportsDriverRankRes, apiSportsRacesRes } from "./apiSportsResponseTypes";
-import { Driver, League, Team, User, Usernames, draftTeam } from "./dbTypes";
+import { Driver, League, Team, User, Usernames} from "./dbTypes";
 import { IdriverTiers } from "./dbTypes";
 
 

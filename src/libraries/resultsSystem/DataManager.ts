@@ -28,6 +28,7 @@ export default class DataManager{
     private readonly getFastetLapUrl = "https://v1.formula-1.api-sports.io/rankings/fastestlaps?race="
 
     async init(){
+        await 
         await this.update()
     }
  
@@ -106,7 +107,7 @@ export default class DataManager{
             for(let i = 0; i < this.newResults.length; i++){
                 const id = this.newResults[i].id
                 const result = this.newResults[i].results
-                if(!result) throw new Error("No race results")
+                if(!result) throw new Error("No race results") 
                 
                 const dbRes = await db<RaceResultsStore>('RaceResultsStore').insert({
                     id:id,
@@ -149,7 +150,7 @@ export default class DataManager{
             this.allRaceResults = raceResultsPayload
             this.allFastestLapResult = fastestLapResPayload
             this.allDrivers = driverData[0]
-            this.driverTierData = driverTierData[0]
+            this.driverTierData = driverTierData[0] 
 
             if(!raceResultsPayload[0]||!fastestLapResPayload[0]||!driverData[0]||!driverTierData[0]){
                 throw new Error('getting some or all data failed')
@@ -239,12 +240,12 @@ export default class DataManager{
     async update(){
         try {
             this.date = Date.now();
-            await updateRacesApiStore();
+            await updateRacesApiStore(); 
             await updateDriversApiStore();
             
             await this.getRacesPlanned();
     
-            await this.checkIfRaceResultsNeedGetting();
+            await this.checkIfRaceResultsNeedGetting(); 
             await this.checkIfFastestLapResultsNeedGetting();
     
             await this.getNewResults();

@@ -5,7 +5,7 @@
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc & @powershell copy ./package.json ../dist/server/package.json &  @powershell copy ./.env ../dist/server/",
+    "build": "tsc & @powershell copy ./package.json ../dist/server/package.json &  @powershell copy ./.env ../dist/server/ @powershell copy server/src/services/db/dbScripts/init.sql ../dist/server/src/services/db/dbScripts/init.sql" ,
     "dev": "nodemon -L src/main.ts",
     "docker:dev": "docker-compose up --build --no-recreate -d"
   },

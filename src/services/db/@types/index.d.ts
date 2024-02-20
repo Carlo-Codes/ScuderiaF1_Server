@@ -5,17 +5,6 @@ import { Request } from 'express';
 
 
 
-declare module 'knex/types/tables' {
-    interface Tables{
-        users:User;
-        users_composite:Knex.CompositeTableType<
-        User,
-        Pick<User, 'email'>,
-        Partial<Omit<User, 'id'>>
-        >
-    }
-
-}
 
 declare module 'knex/types/tables' {
     interface Tables{
@@ -36,11 +25,6 @@ declare module 'knex/types/tables' {
     }
 }
 
-declare module 'knex/types/tables' {
-    interface Tables{
-        draftTeams:draftTeam;
-    }
-}
 
 declare module 'knex/types/tables' {
     interface Tables{

@@ -20,13 +20,13 @@ app.listen(port, ()=>{
 const pointsSystem = new PointSystem();
 
 async function pointSystenLoop(){
+    await createDatabase()
     await pointsSystem.init();
     setInterval(async()=>{
         await pointsSystem.update();
     },1800000) 
 }
+pointSystenLoop();   
 
-pointSystenLoop();
 
-//createDatabase();   
 //populateTables();

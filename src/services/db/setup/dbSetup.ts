@@ -84,7 +84,7 @@ async function createLeagesTable(){
 }
 
 async function createUserLeagueRelationTable(){
-  await db.schema.withSchema('public').createTable('leagueTeamRelation', function (table: Knex.CreateTableBuilder){
+  await db.schema.withSchema('public').createTable('UserLeagueRelation', function (table: Knex.CreateTableBuilder){
     table.bigIncrements('id').primary() 
     table.string('user_id')
     table.integer('league_id').references('leagues.id')
