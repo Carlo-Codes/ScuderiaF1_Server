@@ -8,7 +8,7 @@ const seasonYear = 2024
 const racesUrl = `https://v1.formula-1.api-sports.io/races?season=${seasonYear}`
 const driverUrl = `https://v1.formula-1.api-sports.io/rankings/drivers?season=${seasonYear}`
 const fastestLapURL = `https://v1.formula-1.api-sports.io/rankings/fastestlaps?race=`
-const baseDir = path.join(__dirname, '..','..','..', 'client', 'assets')
+const baseDir = path.join(__dirname, '..','..','..', '..','client', 'assets')
 const driverImgDir = path.join(baseDir, 'driverImages')
 const circuitImgDir = path.join(baseDir, 'circuitImages')
 

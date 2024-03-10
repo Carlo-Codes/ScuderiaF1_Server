@@ -70,7 +70,7 @@ export class TeamPointsDistributor{
     async updateTeamWithPoints(){
         try {
             const dbres = await db<Team>('teams')
-            .where('competition_id', '=', this.team.competition_id)
+            .where('id', '=', this.team.id)
             .update({ 
                 tier1_points:this.teamWithPoints.tier1_points,
                 tier2_points:this.teamWithPoints.tier2_points,
