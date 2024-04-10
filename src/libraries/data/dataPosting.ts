@@ -4,13 +4,16 @@ import { DriverApiStore, RacesApiStore } from '../../model/dbTypes';
 import {apiSportsFastestLapResults, apiSportsRacesRes, apiSportsResponse, apiSportsDriverRankRes, apiSportsResponseBinding} from '../../model/apiSportsResponseTypes'
 import path from 'path';
 import * as fs from 'node:fs/promises';
+import { env } from 'process';
+import 'dotenv/config'
+import { PathLike } from 'fs';
 const seasonYear = 2024
 const racesUrl = `https://v1.formula-1.api-sports.io/races?season=${seasonYear}`
 const driverUrl = `https://v1.formula-1.api-sports.io/rankings/drivers?season=${seasonYear}`
-const fastestLapURL = `https://v1.formula-1.api-sports.io/rankings/fastestlaps?race=`
-const baseDir = path.join(__dirname, '..','..','..', '..','client', 'assets')
-const driverImgDir = path.join(baseDir, 'driverImages')
-const circuitImgDir = path.join(baseDir, 'circuitImages')
+ 
+const driverImgDir = env.DRIVER_IMG_DIR  
+const circuitImgDir = env.CIRCUIT_IMG_DIR 
+
 
 
 export async function updateRacesApiStore(){
@@ -59,8 +62,8 @@ export async function updateDriversApiStore(){
 
 export async function updateDriverPictures(driverRes:apiSportsDriverRankRes[]) {
 
-    const files = await fs.readdir(driverImgDir)
-    const filenames = [] as string[]
+    const files = await fs.readdir(driverImgDir as PathLike)
+    const filenames = [] as string[] 
     for (const file of files){
         filenames.push(path.parse(file).name) 
     }
@@ -69,15 +72,17 @@ export async function updateDriverPictures(driverRes:apiSportsDriverRankRes[]) {
         const url = driverRes[i].driver.image
         const name = driverRes[i].driver.name
         if(!filenames.includes(name)){
-            const imgPath = path.join(driverImgDir,`${name}.png`)
+            console.log(circuitImgDir)
+            const imgPath = path.join(driverImgDir!,`${name}.png`)
             setTimeout(()=>{downloadAsset(url, imgPath)},3000);    
         }
     }
 }
 
 export async function updateCircuitPictures(raceRes:apiSportsRacesRes[]){
-    const files = await fs.readdir(circuitImgDir)
+    const files = await fs.readdir(circuitImgDir as PathLike)
     const filenames = [] as string[]
+
 
     for (const file of files){
         filenames.push(path.parse(file).name)
@@ -88,7 +93,7 @@ export async function updateCircuitPictures(raceRes:apiSportsRacesRes[]){
         const name = raceRes[i].circuit.name
 
         if(!filenames.includes(name)){
-            const imgPath = path.join(circuitImgDir, `${name}.png`)
+            const imgPath = path.join(circuitImgDir!, `${name}.png`)
             setTimeout(()=>{downloadAsset(url, imgPath)},3000);
         }
     }

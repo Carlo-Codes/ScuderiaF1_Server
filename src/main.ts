@@ -22,9 +22,10 @@ const pointsSystem = new PointSystem();
 async function pointSystenLoop(){
     await createDatabase()
     await pointsSystem.init();
+    await pointsSystem.update();
     setInterval(async()=>{
         await pointsSystem.update();
-    },18000) 
+    },1800000) 
 }
 pointSystenLoop();   
 

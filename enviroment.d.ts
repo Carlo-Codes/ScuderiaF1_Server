@@ -8,9 +8,12 @@ declare global{
             DB_NAME:string,
             DB_PASSWORD:string,
 
+            DRIVER_IMG_DIR:string,
+            CIRCUIT_IMG_DIR:string,
+
             POOL_ID:string,
             CLIENT_ID:string,
-            REGION:string,
+            REGION:string, 
 
             SECRET_HASH:string
         }

@@ -22,9 +22,8 @@ export async function downloadAsset(url:string, filename:string){
     try {
         const res = await fetch(url)
         if(res.status != 200){
-            console.log('error downloading imager, try again')
-            console.log(res.text())
-            return 
+            console.log('error downloading image, try again' + filename)
+            return res 
         }
         const data = await res.buffer()
         await fs.writeFile(filename,data)
